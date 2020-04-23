@@ -1,8 +1,9 @@
 """
-Author : kschackart
+Author : schackartk
 Purpose: A reddit bot for spreading awareness of the misspelling of 'tonkotsu'
 Date   : 22 April 2020
 """
+
 import argparse
 import config # log in information file
 import os
@@ -13,7 +14,7 @@ import time
 
 # --------------------------------------------------
 def get_args():
-    """get command-line arguments"""
+    """Get command-line arguments"""
     parser = argparse.ArgumentParser(
         description='Run the Tonkotsu Police Bot',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -27,12 +28,12 @@ def get_args():
         default='id_file.txt')
     
     parser.add_argument(
-            '-d',
-            '--deleted',
-            help='Deleted comments file',
-            metavar='FILE',
-            type=str,
-            default='deleted.txt')
+        '-d',
+        '--deleted',
+        help='Deleted comments file',
+        metavar='FILE',
+        type=str,
+        default='deleted.txt')
 
     return parser.parse_args()
 
@@ -48,6 +49,7 @@ def die(msg='Something bad happened'):
     sys.exit(1)
 # --------------------------------------------------
 def get_history(id_file, del_file):
+    """Get information on bot action history from files"""
     id_list = []
     del_list = []
     
@@ -69,6 +71,7 @@ def get_history(id_file, del_file):
 
 # --------------------------------------------------
 def bot_login():
+    """Sign bot into reddit"""
     
     print('Logging in... ', end='')
     r = praw.Reddit(username = config.username,
@@ -83,6 +86,7 @@ def bot_login():
 
 # --------------------------------------------------
 def investigate(r, history, id_file):
+    """Look for tonkotsu misspelling"""
     katsu_count = 0
     
     print('Scanning... ')
@@ -100,6 +104,7 @@ def investigate(r, history, id_file):
 
 # --------------------------------------------------
 def purge(r, history, del_file):
+    """Go through bot comments and delete downvoted ones"""
     user_name = config.username
     user = r.redditor(user_name)
     
@@ -117,7 +122,7 @@ def purge(r, history, del_file):
     print('Done purging.')
 # --------------------------------------------------
 def main():
-    """All the stuff"""    
+    """The good stuff"""    
     args = get_args()
     id_file = args.posts
     del_file = args.deleted
