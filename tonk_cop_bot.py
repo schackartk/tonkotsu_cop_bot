@@ -47,6 +47,7 @@ def die(msg='Something bad happened'):
     """warn() and exit with error"""
     warn(msg)
     sys.exit(1)
+    
 # --------------------------------------------------
 def get_history(id_file, del_file):
     """Get information on bot action history from files"""
@@ -88,6 +89,15 @@ def bot_login():
 def investigate(r, history, id_file):
     """Look for tonkotsu misspelling"""
     katsu_count = 0
+    msg = '''^(Beep boop, I am a robot)  
+    Did you happen to mean 
+    [tonkotsu](https://en.wikipedia.org/wiki/Tonkotsu_ramen) instead of 
+    [tonkatsu](https://en.wikipedia.org/wiki/Tonkatsu)?  
+    I am just a simple reddit bot trying to help spread awareness of the
+    misspelling of tonkotsu.  
+    If you did indeed mean *tonkatsu*, please downvote
+    this comment. With enough downvotes, it will be automatically deleted.
+    '''
     
     print('Scanning... ')
     posts = r.subreddit('test').new(limit=25)
@@ -97,7 +107,7 @@ def investigate(r, history, id_file):
             katsu_count += 1
             with open(id_file, 'a') as fh:
                 print(post.id, file=fh)
-            post.reply('Tonkatsu found!')
+            post.reply(msg)
             
     print('Done scanning.')
     print('Commented on {} posts'.format(katsu_count))
@@ -109,17 +119,18 @@ def purge(r, history, del_file):
     user = r.redditor(user_name)
     
     print('Checking to purge... ')
-    for comment in user.comments.new():
+    for comment in user.comments.new(limit=None):
         print('Comment score: {}'.format(comment.score))
         if comment.score < -1 and comment.id not in history['deleted']:
             comment.delete()
-            msg = 'Comment removed due to downvotes: {}.format'(comment.id)
+            msg = 'Comment removed due to downvotes: {}'.format(comment.id)
             r.redditor(user_name).message('Comment Removed', msg)
             print(msg)
             with open(del_file, 'a') as fh:
                 print(comment.id, file=fh)
     
     print('Done purging.')
+    
 # --------------------------------------------------
 def main():
     """The good stuff"""    
