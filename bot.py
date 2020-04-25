@@ -25,7 +25,7 @@ def get_args():
         help='Previously commented posts file',
         metavar='FILE',
         type=str,
-        default='id_file.txt')
+        default='data/id_file.txt')
     
     parser.add_argument(
         '-d',
@@ -33,7 +33,7 @@ def get_args():
         help='Deleted comments file',
         metavar='FILE',
         type=str,
-        default='deleted.txt')
+        default='data/deleted.txt')
 
     return parser.parse_args()
 
@@ -103,6 +103,11 @@ def investigate(r, history, id_file):
     posts = r.subreddit('test').new(limit=25)
     for post in posts:
         if 'tonkatsu' in post.title and post.id not in history['post_id']:
+        # Check for the word tonkatsu
+        
+        # if regex 
+        # See if it is likely not a mistake
+        # Check if user corrected it
             print('Tonkatsu found in post: {}.'.format(post.id))
             katsu_count += 1
             with open(id_file, 'a') as fh:
