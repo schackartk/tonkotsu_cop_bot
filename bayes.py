@@ -8,11 +8,13 @@ Date   : 23 April 2020
 import matplotlib.pyplot as plt # Generating graphical confusion matrix
 import pandas as pd
 import os
+import pickle
 import re # Regular expressions
 import seaborn as sn # Generating heatmap
 
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB
@@ -41,7 +43,7 @@ def get_features(titles):
     return features
 
 # --------------------------------------------------
-def generate_model(X_train, X_test, y_train):
+def MNB_model_generate(X_train, X_test, y_train): # Multinomial Naive Bayes' Model
     """Train Naive Bayes model"""  
     naive_model = MultinomialNB()
     classifier = naive_model.fit(X_train, y_train)
@@ -60,22 +62,39 @@ def main():
     titles = []
     for i in range(raw_data.title.size):
         titles.append(clean_title(raw_data.title[i]))
-    
+
+    print('Extracting features')
     x = get_features(titles)
     y = raw_data.label
     
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25)
     
-    trained_model = generate_model(x_train, x_test, y_train)
-        
-    prediction = trained_model.predict(x_test)
+    print('Training model')
+    MNB_model = MNB_model_generate(x_train, x_test, y_train)
     
-    cm = confusion_matrix(prediction, y_test)
+    print('Testing model')
+    MNB_prediction = MNB_model.predict(x_test)
+    
+    MNB_confusion = confusion_matrix(MNB_prediction, y_test)
     plt.figure(figsize = (10,7))
-    sn.heatmap(cm, annot=True)
+    sn.heatmap(MNB_confusion, annot=True)
     
-    accuracy = cm.trace()/cm.sum()
-    print('Accuracy is: {}'.format(accuracy))
+    MNB_accuracy = MNB_model.score(x_test, y_test)
+    
+    pkl_filename = 'MNB_model.pkl'
+    MNB_tuple = (MNB_model, x_train, y_train, MNB_accuracy)
+    
+    print('Saving pickle')
+    with open(pkl_filename, 'wb') as file:
+        pickle.dump(MNB_tuple, file)
+    
+    print('Opening pickle')
+    with open(pkl_filename, 'rb') as file:
+        pickle_model, x_train, y_train, pickle_accuracy = pickle.load(file)
+        
+    score = pickle_model.score(x_test, y_test)
+    print('Test score: {}%'.format(100*score))
+    print('Saved score: {}%'.format(100*score))
     
 # --------------------------------------------------
 if __name__ == '__main__':

@@ -102,10 +102,7 @@ def investigate(r, history, id_file):
     print('Scanning... ')
     posts = r.subreddit('test').new(limit=25)
     for post in posts:
-        if 'tonkatsu' in post.title and post.id not in history['post_id']:
-        # Check for the word tonkatsu
-        
-        # if regex 
+        if 'tonkatsu' in post.title.lower() and post.id not in history['post_id']: 
         # See if it is likely not a mistake
         # Check if user corrected it
             print('Tonkatsu found in post: {}.'.format(post.id))
