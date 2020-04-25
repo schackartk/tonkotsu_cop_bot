@@ -14,6 +14,7 @@ import seaborn as sn # Generating heatmap
 
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB
@@ -61,34 +62,40 @@ def main():
     titles = []
     for i in range(raw_data.title.size):
         titles.append(clean_title(raw_data.title[i]))
-    
+
+    print('Extracting features')
     x = get_features(titles)
     y = raw_data.label
     
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25)
     
+    print('Training model')
     MNB_model = MNB_model_generate(x_train, x_test, y_train)
-        
+    
+    print('Testing model')
     MNB_prediction = MNB_model.predict(x_test)
     
     MNB_confusion = confusion_matrix(MNB_prediction, y_test)
     plt.figure(figsize = (10,7))
     sn.heatmap(MNB_confusion, annot=True)
     
-    MNB_accuracy = MNB_confusion.trace()/MNB_confusion.sum()
     MNB_accuracy = MNB_model.score(x_test, y_test)
-    print('Accuracy is: {}'.format(MNB_accuracy))
     
     pkl_filename = 'MNB_model.pkl'
+    MNB_tuple = (MNB_model, x_train, y_train, MNB_accuracy)
     
+    print('Saving pickle')
     with open(pkl_filename, 'wb') as file:
-        pickle.dump(MNB_model, file)
-        
+        pickle.dump(MNB_tuple, file)
+    
+    print('Opening pickle')
     with open(pkl_filename, 'rb') as file:
-        pickle_model = pickle.load(file)
+        pickle_model, x_train, y_train, pickle_accuracy = pickle.load(file)
         
     score = pickle_model.score(x_test, y_test)
-    print('Test score: {}'.format(100*score))        
+    print('Test score: {}%'.format(100*score))
+    print('Saved score: {}%'.format(100*score))
+    
 # --------------------------------------------------
 if __name__ == '__main__':
     main()    
