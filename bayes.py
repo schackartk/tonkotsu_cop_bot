@@ -6,6 +6,7 @@ Date   : 23 April 2020
 
 
 import matplotlib.pyplot as plt # Generating graphical confusion matrix
+import nltk
 import pandas as pd
 import os
 import pickle
@@ -82,7 +83,7 @@ def main():
     MNB_accuracy = MNB_model.score(x_test, y_test)
     
     pkl_filename = 'MNB_model.pkl'
-    MNB_tuple = (MNB_model, x_train, y_train, MNB_accuracy)
+    MNB_tuple = (MNB_model, x_test, y_test, MNB_accuracy)
     
     print('Saving pickle')
     with open(pkl_filename, 'wb') as file:
@@ -90,7 +91,7 @@ def main():
     
     print('Opening pickle')
     with open(pkl_filename, 'rb') as file:
-        pickle_model, x_train, y_train, pickle_accuracy = pickle.load(file)
+        pickle_model, x_test, y_test, pickle_accuracy = pickle.load(file)
         
     score = pickle_model.score(x_test, y_test)
     print('Test score: {}%'.format(100*score))
