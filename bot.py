@@ -102,7 +102,7 @@ def investigate(r, history, id_file):
     print('Scanning... ')
     posts = r.subreddit('test').new(limit=25)
     for post in posts:
-        if 'tonkatsu' in post.title and post.id not in history['post_id']:
+        if 'tonkatsu' in post.title.lower() and post.id not in history['post_id']:
             print('Tonkatsu found in post: {}.'.format(post.id))
             katsu_count += 1
             with open(id_file, 'a') as fh:
