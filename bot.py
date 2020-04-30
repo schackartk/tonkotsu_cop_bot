@@ -63,10 +63,6 @@ def get_history(id_file, del_file):
     """Get information on bot action history from files"""
     id_list = []
     del_list = []
-    
-    for file in [id_file, del_file]:
-        if not os.path.isfile(file):
-            die('No file "{}" found.'.format(file))
         
     with open(id_file, 'r') as fh:
         for line in fh.read().splitlines():
@@ -179,6 +175,11 @@ def main():
     del_file = args.deleted
     model_file = args.model
     
+    # Check for files
+    for f in [id_file, del_file, model_file]:
+        if not os.path.isfile(f):
+            die('File: "{}" not found'.format(f))
+    
     # Get history from files
     # Make 'history' dictionary with keys: post_id, deleted
     history = get_history(id_file, del_file)
@@ -188,7 +189,7 @@ def main():
     
 #    while True:
 #        try:        
-    investigate(r, history, id_file, model)
+    investigate(r, history, id_file, model_file)
     purge(r, history, del_file)
 #    time.sleep(30)
 #        except:
