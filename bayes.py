@@ -32,16 +32,24 @@ def clean_title(raw_title):
     return(" ".join(meaningful_words))
 
 # --------------------------------------------------
-def get_features(titles):
-    """Get word feature vectors"""  
-    vectorizer = CountVectorizer(analyzer='word',
-                                 preprocessor=None,
-                                 stop_words='english')
+def get_features(titles, vec_obj):
+    """Get word feature vectors"""
     
-    features = vectorizer.fit_transform(titles)
-    features = features.toarray()
+    if vec_obj:
+        # Here the vectorizer has already been trained and passed as an arg
+        # Need to feed vec_obj into vectorizer function
+        # This will be used in the case of testing and in real application
+        features = []
+        vectorizer = vec_obj
+    else:
+        vectorizer = CountVectorizer(analyzer='word',
+                                     preprocessor=None,
+                                     stop_words='english')
+        
+        features = vectorizer.fit_transform(titles)
+        features = features.toarray()
     
-    return features
+    return features, vectorizer
 
 # --------------------------------------------------
 def MNB_model_generate(X_train, X_test, y_train): # Multinomial Naive Bayes' Model
@@ -64,11 +72,15 @@ def main():
     for i in range(raw_data.title.size):
         titles.append(clean_title(raw_data.title[i]))
 
-    print('Extracting features')
-    x = get_features(titles)
+
     y = raw_data.label
     
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25)
+    titles_train, titles_test, y_train, y_test = train_test_split(titles, y, test_size=0.25)
+    
+    print('Extracting features')
+    x_train, vectorizer = get_features(titles_train, None)
+    
+    x_test, _ = get_features(titles_test, vectorizer)
     
     print('Training model')
     MNB_model = MNB_model_generate(x_train, x_test, y_train)
