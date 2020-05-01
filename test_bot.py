@@ -49,5 +49,8 @@ def test_bad_input():
     assert out == 'File: "{}" not found'.format(bad_file)
     
 # --------------------------------------------------
-def test_
+def test_predict():
+    """see if prediction model is behaving the same"""
+    
+    
            
