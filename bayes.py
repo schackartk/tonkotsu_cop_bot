@@ -32,21 +32,21 @@ def clean_title(raw_title):
     return(" ".join(meaningful_words))
 
 # --------------------------------------------------
-def get_features(titles, vec_obj):
+def get_features(stng, vec_obj):
     """Get word feature vectors"""
     
     if vec_obj:
         # Here the vectorizer has already been trained and passed as an arg
         # Need to feed vec_obj into vectorizer function
         # This will be used in the case of testing and in real application
-        features = []
         vectorizer = vec_obj
+        features = vectorizer.transform(stng)
     else:
         vectorizer = CountVectorizer(analyzer='word',
                                      preprocessor=None,
                                      stop_words='english')
         
-        features = vectorizer.fit_transform(titles)
+        features = vectorizer.fit_transform(stng)
         features = features.toarray()
     
     return features, vectorizer
