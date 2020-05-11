@@ -27,6 +27,7 @@ def clean_title(raw_title):
     letters_only = re.sub('[^a-zA-Z]', ' ', raw_title)
     words = letters_only.lower().split()
     stop = set(stopwords.words('english'))
+    stop.add('tonkatsu')
     meaningful_words = [w for w in words if w not in stop]
    
     return(" ".join(meaningful_words))
