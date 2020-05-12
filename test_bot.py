@@ -59,10 +59,7 @@ def test_predict():
             title = fields[2]
             new_pred = int(bot.predict(title,'MNB_model.pkl'))
             assert new_pred == old_pred
-    # old_pred = 1
-    # title = 'Tonkatsu ramen from Ramen-San in Chicago'
-    # new_pred = bot.predict(title, 'MNB_model.pkl')
-    # assert new_pred == old_pred
+
         
     
            
