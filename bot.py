@@ -131,7 +131,7 @@ def investigate(r, history, id_file, model_file):
             print('Tonkatsu found in post: {}.'.format(post.id))
             print('Post title: {}'.post.title)
             
-            if predict(post_title, model_file):
+            if int(predict(post_title, model_file)):
                 print('Model predicted mistake spelling')
                 # Check if user corrected it
                 katsu_count += 1
