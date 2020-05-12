@@ -6,20 +6,20 @@ Date   : 23 April 2020
 
 import argparse
 import matplotlib.pyplot as plt # Generating graphical confusion matrix
-import nltk
+import nltk # Natural language toolkit - for getting stopwords
 import pandas as pd
-import os
-import pickle
+import os # Working with files
+import pickle # Saving model for reuse
 import re # Regular expressions
 import seaborn as sn # Generating heatmap
 
-from nltk.corpus import stopwords
+from nltk.corpus import stopwords 
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import MultinomialNB, BernoulliNB
+from sklearn.naive_bayes import MultinomialNB
 
+# Downloading stopwords doesn't need to be run every time
 #nltk.download('stopwords')
 
 # --------------------------------------------------
@@ -50,8 +50,11 @@ def get_args():
 # --------------------------------------------------
 def clean_title(raw_title):
     """Take title strings and clean them"""
+    # Ignore anything that is not in alphabet
     letters_only = re.sub('[^a-zA-Z]', ' ', raw_title)
+    # Ignore case
     words = letters_only.lower().split()
+    # Ignore insignificant words
     stop = set(stopwords.words('english'))
     stop.add('tonkatsu')
     meaningful_words = [w for w in words if w not in stop]
@@ -79,8 +82,11 @@ def get_features(stng, vec_obj):
 
 # --------------------------------------------------
 def MNB_model_generate(X_train, X_test, y_train): # Multinomial Naive Bayes' Model
-    """Train Naive Bayes model"""  
+    """Train Naive Bayes model"""
+    # Generate a blank multinomial naive bayes model
     naive_model = MultinomialNB()
+    
+    # Train the model
     classifier = naive_model.fit(X_train, y_train)
     
     return classifier
@@ -144,17 +150,6 @@ def main():
     print('Saving pickle')
     with open(pkl_file, 'wb') as file:
         pickle.dump(MNB_tuple, file)
-    
-    print('Opening pickle')
-    with open(pkl_file, 'rb') as file:
-        pickle_model, x_test, y_test, pickle_accuracy, vec = pickle.load(file)
-        
-    score = pickle_model.score(x_test, y_test)
-    print('Test score: {}%'.format(100*score))
-    print('Saved score: {}%'.format(100*pickle_accuracy))
-    
-
-
     
 # --------------------------------------------------
 if __name__ == '__main__':
