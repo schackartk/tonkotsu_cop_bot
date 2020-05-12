@@ -8,7 +8,7 @@ Date   : 22 April 2020
 Run using python -m pytest -v test_bot.py
 """
 
-#import bot
+import bot
 import os
 import pytest
 import random
@@ -51,6 +51,18 @@ def test_bad_input():
 # --------------------------------------------------
 def test_predict():
     """see if prediction model is behaving the same"""
-    
+    with open('test_data.txt', 'r') as f:
+        next(f) # Skip header row
+        for line in f:
+            fields = line.split('\t')
+            old_pred = int(fields[1])
+            title = fields[2]
+            new_pred = int(bot.predict(title,'MNB_model.pkl'))
+            assert new_pred == old_pred
+    # old_pred = 1
+    # title = 'Tonkatsu ramen from Ramen-San in Chicago'
+    # new_pred = bot.predict(title, 'MNB_model.pkl')
+    # assert new_pred == old_pred
+        
     
            

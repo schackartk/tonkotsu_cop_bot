@@ -96,7 +96,6 @@ def main():
     
     raw_data = pd.read_csv(data_file, delimiter='\t', header=0)
     
-    raw_titles = raw_data.title
     titles = []
     for i in range(raw_data.title.size):
         titles.append(clean_title(raw_data.title[i]))
@@ -115,9 +114,6 @@ def main():
     
     print('Testing model')
     MNB_prediction = MNB_model.predict(x_test)
-    # print(MNB_prediction)
-    # print(y_test)
-    # print(titles_test)
     
     MNB_confusion = confusion_matrix(MNB_prediction, y_test)
     MNB_accuracy = MNB_model.score(x_test, y_test)
@@ -129,6 +125,19 @@ def main():
     plt.ylabel('Predicted Class')
     plt.title('Confusion Matrix \nAccuracy: {}%'.format(accuracy_per), size=14)
     plt.show()
+    
+    print('Saving test data.')
+    if os.path.isfile('test_data.txt'):
+        os.remove('test_data.txt')
+        
+    with open('test_data.txt','a') as fh:
+            i = 0
+            fh.write('Actual\tPredicted\tTitle\n')
+            for ind, label in y_test.items():
+                pred = MNB_prediction[i]
+                tit = raw_data.title[ind]
+                fh.write('{}\t{}\t{}\n'.format(label, pred, tit))
+                i += 1
        
     MNB_tuple = (MNB_model, x_test, y_test, MNB_accuracy, vectorizer)
     
@@ -144,9 +153,8 @@ def main():
     print('Test score: {}%'.format(100*score))
     print('Saved score: {}%'.format(100*pickle_accuracy))
     
-    # print('Saving test data.')
-    # with open('test_data.txt', w) as fh:
-    #     fh.writelines()
+
+
     
 # --------------------------------------------------
 if __name__ == '__main__':

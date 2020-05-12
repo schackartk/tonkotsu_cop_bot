@@ -40,7 +40,7 @@ def get_args():
     parser.add_argument(
         '-m',
         '--model',
-        help='Bodel for classifying titles',
+        help='Model for classifying titles',
         metavar='PKL',
         type=str,
         default='MNB_model.pkl')
@@ -96,12 +96,12 @@ def predict(text, model_file):
     """Use previously trained model to classify title text"""
     
     with open(model_file, 'rb') as file:
-        model, x_test, y_test, model_accuracy = pickle.load(file)
+        model, x_test, y_test, model_accuracy, vec = pickle.load(file)
         
     if model_accuracy != model.score(x_test, y_test):
         warn('Saved and test model accuracy do not match')
     
-    text_features = bayes.get_features(text)
+    text_features, _ = bayes.get_features([text], vec)
     prediction = model.predict(text_features)
     
     return prediction
