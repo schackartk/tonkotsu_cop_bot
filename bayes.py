@@ -4,7 +4,7 @@ Purpose: A Bayes Model for Tonkatsu occurence classification
 Date   : 23 April 2020
 """
 
-
+import argparse
 import matplotlib.pyplot as plt # Generating graphical confusion matrix
 import nltk
 import pandas as pd
@@ -22,6 +22,32 @@ from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 
 #nltk.download('stopwords')
 
+# --------------------------------------------------
+def get_args():
+    """Get command-line arguments"""
+    parser = argparse.ArgumentParser(
+        description='Generate bayesian model for tonkatsu',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument(
+        '-d',
+        '--data',
+        help='Labeled data file',
+        metavar='FILE',
+        type=str,
+        default='data/all_labeled_data.txt')
+    
+    parser.add_argument(
+        '-o',
+        '--out',
+        help='Name of model output (pickle)',
+        metavar='FILE',
+        type=str,
+        default='MNB_model.pkl')
+    
+    return parser.parse_args()
+
+# --------------------------------------------------
 def clean_title(raw_title):
     """Take title strings and clean them"""
     letters_only = re.sub('[^a-zA-Z]', ' ', raw_title)
@@ -35,7 +61,6 @@ def clean_title(raw_title):
 # --------------------------------------------------
 def get_features(stng, vec_obj):
     """Get word feature vectors"""
-    
     if vec_obj:
         # Here the vectorizer has already been trained and passed as an arg
         # Need to feed vec_obj into vectorizer function
@@ -43,12 +68,12 @@ def get_features(stng, vec_obj):
         vectorizer = vec_obj
         features = vectorizer.transform(stng)
     else:
+        # Initiate a new CountVectorizer and use it to generate features
         vectorizer = CountVectorizer(analyzer='word',
                                      preprocessor=None,
                                      stop_words='english')
         
         features = vectorizer.fit_transform(stng)
-        features = features.toarray()
     
     return features, vectorizer
 
@@ -58,29 +83,31 @@ def MNB_model_generate(X_train, X_test, y_train): # Multinomial Naive Bayes' Mod
     naive_model = MultinomialNB()
     classifier = naive_model.fit(X_train, y_train)
     
-    
     return classifier
  
 # -------------------------------------------------- 
 def main():
-    """The good stuff"""    
+    """The good stuff"""
     
-    raw_data = pd.read_csv('data/all_labeled_data.txt',
-                               delimiter='\t',
-                               header=0)
+    # Retrieve command-line arguments from argparse
+    args = get_args()
+    data_file = args.data
+    pkl_file = args.out
     
+    raw_data = pd.read_csv(data_file, delimiter='\t', header=0)
+    
+    raw_titles = raw_data.title
     titles = []
     for i in range(raw_data.title.size):
         titles.append(clean_title(raw_data.title[i]))
 
-
     y = raw_data.label
     
-    titles_train, titles_test, y_train, y_test = train_test_split(titles, y, test_size=0.25)
+    titles_train, titles_test, y_train, y_test = train_test_split(titles, y,
+                                                                  test_size=0.2)
     
     print('Extracting features')
     x_train, vectorizer = get_features(titles_train, None)
-    
     x_test, _ = get_features(titles_test, vectorizer)
     
     print('Training model')
@@ -88,27 +115,38 @@ def main():
     
     print('Testing model')
     MNB_prediction = MNB_model.predict(x_test)
+    # print(MNB_prediction)
+    # print(y_test)
+    # print(titles_test)
     
     MNB_confusion = confusion_matrix(MNB_prediction, y_test)
+    MNB_accuracy = MNB_model.score(x_test, y_test)
+    accuracy_per = round(MNB_accuracy*1000)/10
+    
     plt.figure(figsize = (10,7))
     sn.heatmap(MNB_confusion, annot=True)
-    
-    MNB_accuracy = MNB_model.score(x_test, y_test)
-    
-    pkl_filename = 'MNB_model.pkl'
+    plt.xlabel('Actual Class')
+    plt.ylabel('Predicted Class')
+    plt.title('Confusion Matrix \nAccuracy: {}%'.format(accuracy_per), size=14)
+    plt.show()
+       
     MNB_tuple = (MNB_model, x_test, y_test, MNB_accuracy, vectorizer)
     
     print('Saving pickle')
-    with open(pkl_filename, 'wb') as file:
+    with open(pkl_file, 'wb') as file:
         pickle.dump(MNB_tuple, file)
     
     print('Opening pickle')
-    with open(pkl_filename, 'rb') as file:
+    with open(pkl_file, 'rb') as file:
         pickle_model, x_test, y_test, pickle_accuracy, vec = pickle.load(file)
         
     score = pickle_model.score(x_test, y_test)
     print('Test score: {}%'.format(100*score))
-    print('Saved score: {}%'.format(100*score))
+    print('Saved score: {}%'.format(100*pickle_accuracy))
+    
+    # print('Saving test data.')
+    # with open('test_data.txt', w) as fh:
+    #     fh.writelines()
     
 # --------------------------------------------------
 if __name__ == '__main__':
