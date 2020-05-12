@@ -60,6 +60,7 @@ def die(msg='Something bad happened'):
     
 # --------------------------------------------------
 def get_history(id_file, del_file):
+    
     """Get information on bot action history from files"""
     id_list = []
     del_list = []
@@ -75,6 +76,14 @@ def get_history(id_file, del_file):
     history = {'post_id': id_list, 'deleted': del_list}
         
     return history
+
+# --------------------------------------------------
+def get_comment():
+    """Get canned bot comment"""
+
+    cmt = "^(Beep boop, I am a robot)\n\nDid you happen to mean [tonkotsu](https://en.wikipedia.org/wiki/Tonkotsu_ramen) instead of [tonkatsu](https://en.wikipedia.org/wiki/Tonkatsu)?\n\n^(I am a reddit bot that has been trained to distinguish when usage of 'tonkatsu' is a mistake, but I make mistakes myself. If this is indeed *tonkatsu*, please downvote this comment. With enough downvotes, it will be automatically deleted.)"
+    
+    return cmt
 
 # --------------------------------------------------
 def bot_login():
@@ -95,13 +104,18 @@ def bot_login():
 def predict(text, model_file):
     """Use previously trained model to classify title text"""
     
+    # Unpickle Bayesian model file, made by bayes.py
     with open(model_file, 'rb') as file:
         model, x_test, y_test, model_accuracy, vec = pickle.load(file)
-        
+    
+    # Check that model is importing okay
     if model_accuracy != model.score(x_test, y_test):
         warn('Saved and test model accuracy do not match')
     
+    # Get features from the text using old vectorizer
     text_features, _ = bayes.get_features([text], vec)
+    
+    # Get predicted classification using pickled model
     prediction = model.predict(text_features)
     
     return prediction
@@ -109,19 +123,11 @@ def predict(text, model_file):
 # --------------------------------------------------
 def investigate(r, history, id_file, model_file):
     """Look for tonkotsu misspelling"""
-    katsu_count = 0 # Number of instances corrected
+    ct = 0 # Number of instances corrected
     
-    msg = '''^(Beep boop, I am a robot)  
-    Did you happen to mean 
-    [tonkotsu](https://en.wikipedia.org/wiki/Tonkotsu_ramen) instead of 
-    [tonkatsu](https://en.wikipedia.org/wiki/Tonkatsu)?  
-    I am just a simple reddit bot trying to help spread awareness of the
-    misspelling of tonkotsu.  
-    If you did indeed mean *tonkatsu*, please downvote
-    this comment. With enough downvotes, it will be automatically deleted.
-    '''
+    cmt = get_comment()
     
-    print('Scanning... ')
+    print('Scanning...\n')
     posts = r.subreddit('test').new(limit=25)
     for post in posts:
         
@@ -129,22 +135,24 @@ def investigate(r, history, id_file, model_file):
         
         if 'tonkatsu' in post_title and post.id not in history['post_id']: 
             print('Tonkatsu found in post: {}.'.format(post.id))
-            print('Post title: {}'.post.title)
+            print('Post title: {}'.format(post.title))
             
             if int(predict(post_title, model_file)):
                 print('Model predicted mistake spelling')
+                print('Commenting\n')
                 # Check if user corrected it
-                katsu_count += 1
+                ct += 1
                 with open(id_file, 'a') as fh:
                     print(post.id, file=fh)
-                post.reply(msg)
+                post.reply(cmt)
                 # Need to add in message bot's acct
             else:
                 print('Model predicted correct spelling')
+                print('Not commenting\n')
                 # Need to add in message bot's acct
             
     print('Done scanning.')
-    print('Commented on {} posts'.format(katsu_count))
+    print('Commented on {} post{}\n'.format(ct, '' if ct == 1 else 's'))
 
 # --------------------------------------------------
 def purge(r, history, del_file):
@@ -152,9 +160,8 @@ def purge(r, history, del_file):
     user_name = config.username
     user = r.redditor(user_name)
     
-    print('Checking to purge... ')
+    print('Checking to purge comments... ')
     for comment in user.comments.new(limit=None):
-        print('Comment score: {}'.format(comment.score))
         if comment.score < -1 and comment.id not in history['deleted']:
             comment.delete()
             msg = 'Comment removed due to downvotes: {}'.format(comment.id)
@@ -162,7 +169,7 @@ def purge(r, history, del_file):
             print(msg)
             with open(del_file, 'a') as fh:
                 print(comment.id, file=fh)
-    
+       
     print('Done purging.')
     
 # --------------------------------------------------
