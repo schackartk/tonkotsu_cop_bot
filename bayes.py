@@ -120,11 +120,11 @@ def generate_model(X_train, X_test, y_train): # Multinomial Naive Bayes' Model
     return classifier
 
 # --------------------------------------------------
-def make_confusion_matrix(MNB_prediction, y_test, accuracy_per): # Multinomial Naive Bayes' Model
+def make_confusion_matrix(model_prediction, y_test, accuracy_per): # Multinomial Naive Bayes' Model
     """Plot confusion matrix"""
-    MNB_confusion = confusion_matrix(MNB_prediction, y_test)
+    model_confusion = confusion_matrix(model_prediction, y_test)
     plt.figure(figsize = (10,7))
-    sn.heatmap(MNB_confusion, annot=True)
+    sn.heatmap(model_confusion, annot=True)
     plt.xlabel('Actual Class')
     plt.ylabel('Predicted Class')
     plt.title('Confusion Matrix \nAccuracy: {}%'.format(accuracy_per), size=14)
