@@ -43,7 +43,7 @@ def get_args():
         help='Model for classifying titles',
         metavar='PKL',
         type=str,
-        default='MNB_model.pkl')
+        default='data/model.pkl')
 
     return parser.parse_args()
 

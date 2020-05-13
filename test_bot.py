@@ -51,13 +51,13 @@ def test_bad_input():
 # --------------------------------------------------
 def test_predict():
     """see if prediction model is behaving the same"""
-    with open('test_data.txt', 'r') as f:
+    with open('data/test_data.txt', 'r') as f:
         next(f) # Skip header row
         for line in f:
             fields = line.split('\t')
             old_pred = int(fields[1])
             title = fields[2]
-            new_pred = int(bot.predict(title,'MNB_model.pkl'))
+            new_pred = int(bot.predict(title,'data/model.pkl'))
             assert new_pred == old_pred
 
         
