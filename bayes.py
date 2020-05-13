@@ -109,7 +109,7 @@ def get_features(stng, vec_obj):
     return features, vectorizer
 
 # --------------------------------------------------
-def generate_model(X_train, X_test, y_train): # Multinomial Naive Bayes' Model
+def generate_model(X_train, X_test, y_train):
     """Train Naive Bayes model"""
     # Generate a blank multinomial naive bayes model
     naive_model = MultinomialNB()
@@ -120,7 +120,7 @@ def generate_model(X_train, X_test, y_train): # Multinomial Naive Bayes' Model
     return classifier
 
 # --------------------------------------------------
-def make_confusion_matrix(model_prediction, y_test, accuracy_per): # Multinomial Naive Bayes' Model
+def make_confusion_matrix(model_prediction, y_test, accuracy_per):
     """Plot confusion matrix"""
     model_confusion = confusion_matrix(model_prediction, y_test)
     plt.figure(figsize = (10,7))
@@ -131,7 +131,7 @@ def make_confusion_matrix(model_prediction, y_test, accuracy_per): # Multinomial
     plt.show()
  
 # --------------------------------------------------
-def write_test_data(test_out, y_test, model_prediction, raw_data): # Multinomial Naive Bayes' Model
+def write_test_data(test_out, y_test, model_prediction, raw_data):
     """Save data used for testing"""
     with open(test_out,'a') as fh:
             i = 0
