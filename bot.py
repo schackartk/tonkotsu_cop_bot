@@ -4,15 +4,14 @@ Purpose: A reddit bot for spreading awareness of the misspelling of 'tonkotsu'
 Date   : 22 April 2020
 """
 
-import argparse
-import bayes # My model file
-import config # log in information file
-import os
-import pickle
-import praw
-import re
-import sys
-import time
+import argparse  # Get command line arguments
+import bayes     # My model file
+import config    # log in information file
+import os        # Check for and delete files
+import pickle    # Read pickled model file
+import praw      # Interact with reddit
+import sys       # Handle errors
+import time      # Time actions
 
 # --------------------------------------------------
 def get_args():

@@ -4,14 +4,15 @@ Purpose: A Bayes Model for Tonkatsu occurence classification
 Date   : 23 April 2020
 """
 
-import argparse
+import argparse                 # Accept commandline arguments
 import matplotlib.pyplot as plt # Generating graphical confusion matrix
-import nltk # Natural language toolkit - for getting stopwords
-import pandas as pd
-import os # Working with files
-import pickle # Saving model for reuse
-import re # Regular expressions
-import seaborn as sn # Generating heatmap
+import nltk                     # Natural language toolkit - for stopwords
+import pandas as pd             # Read csv as panda data frame
+import os                       # Working with files
+import pickle                   # Saving model for reuse
+import re                       # Regular expressions
+import seaborn as sn            # Generating heatmap
+import sys                      # Deal with error messages
 
 from nltk.corpus import stopwords 
 from sklearn.feature_extraction.text import CountVectorizer
