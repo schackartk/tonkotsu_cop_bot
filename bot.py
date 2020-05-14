@@ -114,14 +114,20 @@ def get_comment(msg_file):
 def save_id(id_file, post_id, pred):
     """Save ID of those scanned"""
     
+    logging.debug('Saving ID\'s to "{}"'.format(id_file))
+    
     with open(id_file, 'a') as fh:
         print('{}\t{}'.format(post_id, pred), file=fh)
+        
+    logging.debug('ID\'s saved to "{}"'.format(id_file))
 
 # --------------------------------------------------
 def bot_login():
     """Sign bot into reddit"""
     
     print('Logging in... ', end='')
+    login_time = time.strftime('%Y/%m/%d %X')
+    logging.info('{}: Logging in.'.format(login_time))
     r = praw.Reddit(username = config.username,
                 password = config.password,
                 client_id = config.client_id,
@@ -130,6 +136,9 @@ def bot_login():
     
     print('log in successful.')
     print('Logged in as {}.'.format(config.username))
+    logging.debug('log in successful.')
+    logging.debug('Logged in as {}.'.format(config.username))
+    
     return r
 
 # --------------------------------------------------
@@ -226,7 +235,7 @@ def main():
     logging.basicConfig(
         filename=log_file,
         filemode='a',
-        level=logging.DEBUG if args.debug else logging.CRITICAL
+        level=logging.DEBUG if args.Debug else logging.INFO
     )
     
     # Check for files
