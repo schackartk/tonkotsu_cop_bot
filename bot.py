@@ -43,6 +43,14 @@ def get_args():
         metavar='PKL',
         type=str,
         default='data/model.pkl')
+    
+    parser.add_argument(
+        '-l',
+        '--login',
+        help='Log in information file',
+        metavar='FILE',
+        type=str,
+        default='data/config.py')
 
     return parser.parse_args()
 
