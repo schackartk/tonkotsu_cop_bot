@@ -171,6 +171,7 @@ def investigate(r, history, id_file, model_file, cmt_file):
     human_name = config.human_acct
     
     print('Scanning...\n')
+    logging.info('Scanning...')
     posts = r.subreddit('test').new(limit=25)
     for post in posts:
         
@@ -179,28 +180,37 @@ def investigate(r, history, id_file, model_file, cmt_file):
         if 'tonkatsu' in post_title and post.id not in history['post_id']: 
             print('Tonkatsu found in post: {}.'.format(post.id))
             print('Post title: {}'.format(post.title))
+            logging.info('Tonktasu found in post: {}.'.format(post.id))
+            logging.info('Post title: {}'.format(post.title))
             
             if int(predict(post_title, model_file)):
                 print('Model predicted mistake spelling')
                 print('Commenting\n')
+                logging.info('Model predicted mistake spelling. Commenting.')
                 # Check if user corrected it
                 ct += 1
                 save_id(id_file, post.id, '1')
                 post.reply(cmt)
+                logging.info('Commented on post')
                 msg = 'Commented on post'
             else:
                 print('Model predicted correct spelling')
                 print('Not commenting\n')
+                logging.info('Model predicted correct spelling. No comment.')
                 save_id(id_file, post.id, '0')
                 msg = 'Post predicted as correct'
              
             full_msg = '{}: [{}]({})\n\n"{}"'.format(msg,post.id, post.url, post.title)
             r.redditor(user_name).message('Tonkatsu Found', full_msg)
             r.redditor(human_name).message('Tonkatsu Found', full_msg)
+            logging.info('Sent messages')
             
             
     print('Done scanning.')
     print('Commented on {} post{}\n'.format(ct, '' if ct == 1 else 's'))
+    logging.info('Done scanning.')
+    logging.info('Commented on {} post{}\n'.format(ct, '' if ct == 1 else 's'))
+    
 
 # --------------------------------------------------
 def purge(r, history, del_file):
