@@ -22,18 +22,18 @@ def get_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     
     parser.add_argument(
-        '-b',
-        '--debug',
-        help='Debugging flag',
-        action='store_true')
-    
-    parser.add_argument(
         '-c',
         '--comment',
         help='Bot comment string file',
         metavar='FILE',
         type=str,
         default='data/comment.txt')
+    
+    parser.add_argument(
+        '-D',
+        '--Debug',
+        help='Debugging flag',
+        action='store_true')
 
     parser.add_argument(
         '-d',
