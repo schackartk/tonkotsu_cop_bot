@@ -7,6 +7,7 @@ Date   : 22 April 2020
 import argparse  # Get command line arguments
 import bayes     # My model file
 import config    # log in information file
+import logging   # Generate log of activity
 import os        # Check for and delete files
 import pickle    # Read pickled model file
 import praw      # Interact with reddit
@@ -19,6 +20,12 @@ def get_args():
     parser = argparse.ArgumentParser(
         description='Run the Tonkotsu Police Bot',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    
+    parser.add_argument(
+        '-b',
+        '--debug',
+        help='Debugging flag',
+        action='store_true')
     
     parser.add_argument(
         '-c',
@@ -35,6 +42,14 @@ def get_args():
         metavar='FILE',
         type=str,
         default='data/deleted.txt')
+    
+    parser.add_argument(
+        '-l',
+        '--log',
+        help='Log file',
+        metavar='FILE',
+        type=str,
+        default='data/.log')
     
     parser.add_argument(
         '-m',
@@ -204,8 +219,15 @@ def main():
     args = get_args()
     id_file = args.posts
     del_file = args.deleted
+    log_file = args.log
     model_file = args.model
     msg_file = args.comment
+    
+    logging.basicConfig(
+        filename=log_file,
+        filemode='a',
+        level=logging.DEBUG if args.debug else logging.CRITICAL
+    )
     
     # Check for files
     for f in [id_file, del_file, model_file, msg_file]:
