@@ -21,13 +21,13 @@ def get_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     
     parser.add_argument(
-        '-p',
-        '--posts',
-        help='Previously commented posts file',
+        '-c',
+        '--comment',
+        help='Bot comment string file',
         metavar='FILE',
         type=str,
-        default='data/id_file.txt')
-    
+        default='data/comment.txt')
+
     parser.add_argument(
         '-d',
         '--deleted',
@@ -43,14 +43,14 @@ def get_args():
         metavar='PKL',
         type=str,
         default='data/model.pkl')
-    
+
     parser.add_argument(
-        '-l',
-        '--login',
-        help='Log in information file',
+        '-p',
+        '--posts',
+        help='Previously commented posts file',
         metavar='FILE',
         type=str,
-        default='data/config.py')
+        default='data/id_file.txt')
 
     return parser.parse_args()
 
@@ -74,7 +74,9 @@ def get_history(id_file, del_file):
         
     with open(id_file, 'r') as fh:
         for line in fh.read().splitlines():
-            id_list.append(line)
+            if line:
+                post_id, _ = line.split('\t')
+                id_list.append(post_id)
    
     with open(del_file, 'r') as fh:
         for line in fh.read().splitlines():
@@ -85,12 +87,20 @@ def get_history(id_file, del_file):
     return history
 
 # --------------------------------------------------
-def get_comment():
+def get_comment(msg_file):
     """Get canned bot comment"""
-
-    cmt = "^(Beep boop, I am a robot)\n\nDid you happen to mean [tonkotsu](https://en.wikipedia.org/wiki/Tonkotsu_ramen) instead of [tonkatsu](https://en.wikipedia.org/wiki/Tonkatsu)?\n\n^(I am a reddit bot that has been trained to distinguish when usage of 'tonkatsu' is a mistake, but I make mistakes myself. If this is indeed *tonkatsu*, please downvote this comment. With enough downvotes, it will be automatically deleted.)"
+    
+    with open(msg_file)as fh:
+        cmt = fh.read()
     
     return cmt
+
+# --------------------------------------------------
+def save_id(id_file, post_id, pred):
+    """Save ID of those scanned"""
+    
+    with open(id_file, 'a') as fh:
+        print('{}\t{}'.format(post_id, pred), file=fh)
 
 # --------------------------------------------------
 def bot_login():
@@ -128,11 +138,13 @@ def predict(text, model_file):
     return prediction
 
 # --------------------------------------------------
-def investigate(r, history, id_file, model_file):
+def investigate(r, history, id_file, model_file, cmt_file):
     """Look for tonkotsu misspelling"""
     ct = 0 # Number of instances corrected
     
-    cmt = get_comment()
+    cmt = get_comment(cmt_file)
+    user_name = config.username
+    human_name = config.human_acct
     
     print('Scanning...\n')
     posts = r.subreddit('test').new(limit=25)
@@ -149,14 +161,19 @@ def investigate(r, history, id_file, model_file):
                 print('Commenting\n')
                 # Check if user corrected it
                 ct += 1
-                with open(id_file, 'a') as fh:
-                    print(post.id, file=fh)
+                save_id(id_file, post.id, '1')
                 post.reply(cmt)
-                # Need to add in message bot's acct
+                msg = 'Commented on post'
             else:
                 print('Model predicted correct spelling')
                 print('Not commenting\n')
-                # Need to add in message bot's acct
+                save_id(id_file, post.id, '0')
+                msg = 'Post predicted as correct'
+             
+            full_msg = '{}: [{}]({})\n\n"{}"'.format(msg,post.id, post.url, post.title)
+            r.redditor(user_name).message('Tonkatsu Found', full_msg)
+            r.redditor(human_name).message('Tonkatsu Found', full_msg)
+            
             
     print('Done scanning.')
     print('Commented on {} post{}\n'.format(ct, '' if ct == 1 else 's'))
@@ -188,9 +205,10 @@ def main():
     id_file = args.posts
     del_file = args.deleted
     model_file = args.model
+    msg_file = args.comment
     
     # Check for files
-    for f in [id_file, del_file, model_file]:
+    for f in [id_file, del_file, model_file, msg_file]:
         if not os.path.isfile(f):
             die('File: "{}" not found'.format(f))
     
@@ -203,7 +221,7 @@ def main():
     
 #    while True:
 #        try:        
-    investigate(r, history, id_file, model_file)
+    investigate(r, history, id_file, model_file, msg_file)
     purge(r, history, del_file)
 #    time.sleep(30)
 #        except:
