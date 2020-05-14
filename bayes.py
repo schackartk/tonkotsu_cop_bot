@@ -59,7 +59,7 @@ def get_args():
         '--test_split',
         help='Test data split ratio',
         metavar='FLOAT',
-        type=str,
+        type=float,
         default=0.2)
     
     return parser.parse_args()
