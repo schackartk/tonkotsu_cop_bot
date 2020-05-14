@@ -40,11 +40,15 @@ def test_usage():
 def test_bad_input():
     """bad input"""
     bad_file = random_string()
-    rv, out = getstatusoutput('{} -p {}'.format(prg, bad_file ))
+    rv, out = getstatusoutput('{} -c {}'.format(prg, bad_file ))
     assert rv > 0
     assert out == 'File: "{}" not found'.format(bad_file)
     
     rv, out = getstatusoutput('{} -d {}'.format(prg, bad_file ))
+    assert rv > 0
+    assert out == 'File: "{}" not found'.format(bad_file)
+    
+    rv, out = getstatusoutput('{} -p {}'.format(prg, bad_file ))
     assert rv > 0
     assert out == 'File: "{}" not found'.format(bad_file)
     
