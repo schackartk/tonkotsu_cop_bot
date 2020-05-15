@@ -5,7 +5,7 @@ Date   : 22 April 2020
 """
 
 """
-Run using python -m pytest -v test_bot.py
+Run using python3 -m pytest -v test_bot.py
 """
 
 import bot
@@ -17,7 +17,7 @@ import string
 
 from subprocess import getstatusoutput, getoutput
 
-prg = "python bot.py"
+prg = "python3 bot.py"
 
 # --------------------------------------------------
 def random_string():
