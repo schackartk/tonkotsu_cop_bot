@@ -63,7 +63,3 @@ def test_predict():
             title = fields[2]
             new_pred = int(bot.predict(title,'data/model.pkl'))
             assert new_pred == old_pred
-
-        
-    
-           
