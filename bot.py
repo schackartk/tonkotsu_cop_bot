@@ -125,9 +125,12 @@ def save_id(id_file, post_id, pred):
 def bot_login():
     """Sign bot into reddit"""
     
+    # Give feedback on login process
     print('Logging in... ', end='')
     login_time = time.strftime('%Y/%m/%d %X')
     logging.info('{}: Logging in.'.format(login_time))
+    
+    # Sign into reddit with praw using config.py info
     r = praw.Reddit(username = config.username,
                 password = config.password,
                 client_id = config.client_id,
@@ -171,36 +174,43 @@ def investigate(r, history, id_file, model_file, cmt_file):
     human_name = config.human_acct
     
     print('Scanning...\n')
-    logging.info('Scanning...')
+    logging.info('Scanning posts...')
+    
+    # Collect newest 25 posts
     posts = r.subreddit('test').new(limit=25)
+    
+    #Iterate through posts
     for post in posts:
         
         post_title = post.title.lower()
         
+        # Check for string, make sure have not commented before
         if 'tonkatsu' in post_title and post.id not in history['post_id']: 
             print('Tonkatsu found in post: {}.'.format(post.id))
             print('Post title: {}'.format(post.title))
             logging.info('Tonktasu found in post: {}.'.format(post.id))
             logging.info('Post title: {}'.format(post.title))
             
-            if int(predict(post_title, model_file)):
+            # Use Bayesian model to decide if should comment
+            if int(predict(post_title, model_file)): # Decided to comment
                 print('Model predicted mistake spelling')
                 print('Commenting\n')
                 logging.info('Model predicted mistake spelling. Commenting.')
-                # Check if user corrected it
-                ct += 1
-                save_id(id_file, post.id, '1')
-                post.reply(cmt)
+                ct += 1 # Increase count for reporting
+                save_id(id_file, post.id, '1') # Store post id
+                post.reply(cmt) # Leave reddit comment
                 logging.info('Commented on post')
                 msg = 'Commented on post'
-            else:
+            else: # Decided not to comment
                 print('Model predicted correct spelling')
                 print('Not commenting\n')
                 logging.info('Model predicted correct spelling. No comment.')
                 save_id(id_file, post.id, '0')
                 msg = 'Post predicted as correct'
-             
+            
             full_msg = '{}: [{}]({})\n\n"{}"'.format(msg,post.id, post.url, post.title)
+            
+            # Send messages notifying decision
             r.redditor(user_name).message('Tonkatsu Found', full_msg)
             r.redditor(human_name).message('Tonkatsu Found', full_msg)
             logging.info('Sent messages')
@@ -219,16 +229,21 @@ def purge(r, history, del_file):
     user = r.redditor(user_name)
     
     print('Checking to purge comments... ')
+    logging.info('Scanning bot comments...')
+    
+    # Go through bot's comments
     for comment in user.comments.new(limit=None):
         if comment.score < -1 and comment.id not in history['deleted']:
             comment.delete()
-            msg = 'Comment removed due to downvotes: {}'.format(comment.id)
             r.redditor(user_name).message('Comment Removed', msg)
+            msg = 'Comment removed due to downvotes: {}'.format(comment.id)
             print(msg)
-            with open(del_file, 'a') as fh:
+            logging.info(msg)
+            with open(del_file, 'a') as fh: # Record deleted commented id
                 print(comment.id, file=fh)
        
     print('Done purging.')
+    logging.info('Done scanning comments.')
     
 # --------------------------------------------------
 def main():
@@ -242,6 +257,7 @@ def main():
     model_file = args.model
     msg_file = args.comment
     
+    # Set up logging configurations, debug or just info
     logging.basicConfig(
         filename=log_file,
         filemode='a',
