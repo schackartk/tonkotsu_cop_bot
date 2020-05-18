@@ -177,7 +177,7 @@ def investigate(r, history, id_file, model_file, cmt_file):
     logging.info('Scanning posts...')
     
     # Collect newest 25 posts
-    posts = r.subreddit('test').new(limit=25)
+    posts = r.subreddit('test').new()
     
     #Iterate through posts
     for post in posts:
@@ -277,15 +277,13 @@ def main():
     # Log in to reddit
     r = bot_login()
     
-#    while True:
-#        try:        
-    investigate(r, history, id_file, model_file, msg_file)
-    purge(r, history, del_file)
-    logging.info('Logging off.\n')
-#    time.sleep(30)
-#        except:
-#            print('Resuming in 10 seconds...')
-#            time.sleep(10)
+    try:
+        investigate(r, history, id_file, model_file, msg_file)
+        purge(r, history, del_file)
+        logging.info('Logging off.\n')
+    except:
+        print('Resuming in 10 seconds...')
+        time.sleep(10)
     
 # --------------------------------------------------
 if __name__ == '__main__':
