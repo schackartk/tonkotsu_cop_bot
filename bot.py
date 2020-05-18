@@ -187,41 +187,42 @@ def investigate(r, history, id_file, model_file, cmt_file):
         # Check for string, make sure have not commented before
         if 'tonkatsu' in post_title and post.id not in history['post_id']: 
             print('Tonkatsu found in post: {}.'.format(post.id))
-            print('Post title: {}'.format(post.title))
+            print('Post title: "{}".'.format(post.title))
             logging.info('Tonktasu found in post: {}.'.format(post.id))
             logging.info('Post title: {}'.format(post.title))
             
             # Use Bayesian model to decide if should comment
             if int(predict(post_title, model_file)): # Decided to comment
-                print('Model predicted mistake spelling')
-                print('Commenting\n')
+                print('Model predicted mistake spelling.')
+                print('Commenting...\n')
                 logging.info('Model predicted mistake spelling. Commenting.')
                 ct += 1 # Increase count for reporting
                 save_id(id_file, post.id, '1') # Store post id
                 post.reply(cmt) # Leave reddit comment
-                logging.info('Commented on post')
-                msg = 'Commented on post'
+                logging.info('Commented on post.')
+                msg = 'Commented on post.'
             else: # Decided not to comment
-                print('Model predicted correct spelling')
-                print('Not commenting\n')
+                print('Model predicted correct spelling.')
+                print('Not commenting.\n')
                 logging.info('Model predicted correct spelling. No comment.')
                 save_id(id_file, post.id, '0')
                 msg = 'Post predicted as correct'
+                
+            break # Don't  need to hit twice if "tonkatsu" is repeated
             
             full_msg = '{}: [{}]({})\n\n"{}"'.format(msg,post.id, post.url, post.title)
             
             # Send messages notifying decision
             r.redditor(user_name).message('Tonkatsu Found', full_msg)
             r.redditor(human_name).message('Tonkatsu Found', full_msg)
-            logging.info('Sent messages')
+            logging.info('Sent messages.')
             
             
     print('Done scanning.')
-    print('Commented on {} post{}\n'.format(ct, '' if ct == 1 else 's'))
+    print('Commented on {} post{}.\n'.format(ct, '' if ct == 1 else 's'))
     logging.info('Done scanning.')
-    logging.info('Commented on {} post{}\n'.format(ct, '' if ct == 1 else 's'))
+    logging.info('Commented on {} post{}.'.format(ct, '' if ct == 1 else 's'))
     
-
 # --------------------------------------------------
 def purge(r, history, del_file):
     """Go through bot comments and delete downvoted ones"""
@@ -236,7 +237,7 @@ def purge(r, history, del_file):
         if comment.score < -1 and comment.id not in history['deleted']:
             comment.delete()
             r.redditor(user_name).message('Comment Removed', msg)
-            msg = 'Comment removed due to downvotes: {}'.format(comment.id)
+            msg = 'Comment removed due to downvotes: {}.'.format(comment.id)
             print(msg)
             logging.info(msg)
             with open(del_file, 'a') as fh: # Record deleted commented id
@@ -280,6 +281,7 @@ def main():
 #        try:        
     investigate(r, history, id_file, model_file, msg_file)
     purge(r, history, del_file)
+    logging.info('Logging off.\n')
 #    time.sleep(30)
 #        except:
 #            print('Resuming in 10 seconds...')
