@@ -61,7 +61,7 @@ optional arguments:
   -l FILE, --log FILE   Log file (default: data/.log)
   -m PKL, --model PKL   Model for classifying titles (default: data/model.pkl)
   -p FILE, --posts FILE
-                        Previously commented posts file (default:
+                        Previously assessed posts file (default:
                         data/id_file.txt)
 ```
 
