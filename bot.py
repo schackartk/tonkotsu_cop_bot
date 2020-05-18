@@ -200,22 +200,22 @@ def investigate(r, history, id_file, model_file, cmt_file):
                 save_id(id_file, post.id, '1') # Store post id
                 post.reply(cmt) # Leave reddit comment
                 logging.info('Commented on post.')
-                msg = 'Commented on post.'
+                msg = 'Commented on post'
             else: # Decided not to comment
                 print('Model predicted correct spelling.')
                 print('Not commenting.\n')
                 logging.info('Model predicted correct spelling. No comment.')
                 save_id(id_file, post.id, '0')
                 msg = 'Post predicted as correct'
-                
-            break # Don't  need to hit twice if "tonkatsu" is repeated
             
-            full_msg = '{}: [{}]({})\n\n"{}"'.format(msg,post.id, post.url, post.title)
+            full_msg = '{}: [{}]({})\n\n"{}"'.format(msg, post.id, post.url, post.title)
             
             # Send messages notifying decision
             r.redditor(user_name).message('Tonkatsu Found', full_msg)
             r.redditor(human_name).message('Tonkatsu Found', full_msg)
             logging.info('Sent messages.')
+            
+            break # Don't  need to hit twice if "tonkatsu" is repeated
             
             
     print('Done scanning.')
