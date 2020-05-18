@@ -1,0 +1,7 @@
+^(Beep boop, I am a robot)
+
+Did you happen to mean [tonkotsu](https://en.wikipedia.org/wiki/Tonkotsu_ramen) instead of [tonkatsu](https://en.wikipedia.org/wiki/Tonkatsu)?
+***
+^(I am a reddit bot that has been trained to tell when someone uses 'tonkatsu' mistakenly, but I make mistakes myself. 
+If this is indeed *tonkatsu*, please downvote this comment.
+With enough downvotes, it will be automatically deleted.)
