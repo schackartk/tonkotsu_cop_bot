@@ -62,7 +62,7 @@ def get_args():
     parser.add_argument(
         '-p',
         '--posts',
-        help='Previously commented posts file',
+        help='Previously assesssed posts file',
         metavar='FILE',
         type=str,
         default='data/id_file.txt')
