@@ -39,6 +39,10 @@ Test data true values, predicted values, and original title strings are stored i
 
 Finally, a pickle (`--out`) is produced containing the model, the test data (including true labels), prediction accuracy, and the `CountVectorizer`. The inclusion of test data and accuracy allows for performance consistency assessment when the model is imported for use in `bot.py`.
 
+![Example of output confusion matrix](data/confusion_matrix.svg)
+
+Unfortunately, since the size of data is small (n=78 including test data), model accuracy upon testing can vary run-to-run (of `bayes.py`, not `bot.py`). Assessed accuracy is almost always >75%. When model is generated for actual use, less data are split for testing to increase training data size.
+
 
 ## `bot.py`
 ```
