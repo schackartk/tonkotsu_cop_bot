@@ -8,12 +8,12 @@ Date   : 22 April 2020
 Run using python3 -m pytest -v test_bot.py
 """
 
-import bot
-import os
-import pytest
-import random
-import re
-import string
+import bot    # My bot program, to be tested
+import os     # Check for files
+import pytest # Testing
+import random # Generate random string
+import re     # Regular expressions
+import string # strings?
 
 from subprocess import getstatusoutput, getoutput
 
