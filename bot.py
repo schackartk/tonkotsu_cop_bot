@@ -177,7 +177,7 @@ def investigate(r, history, id_file, model_file, cmt_file):
     logging.info('Scanning posts...')
     
     # Collect newest 25 posts
-    posts = r.subreddit('test').new()
+    posts = r.subreddit('test+ramen+food+foodporn').new()
     
     #Iterate through posts
     for post in posts:
