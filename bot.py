@@ -19,7 +19,7 @@ import time      # Time actions
 def get_args():
     """Get command-line arguments"""
     parser = argparse.ArgumentParser(
-        description='Run the Tonkotsu Police Bot',
+        description='Run the Tonkotsu Reddit Bot',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     
     parser.add_argument(
@@ -235,10 +235,10 @@ def purge(r, history, del_file):
     
     # Go through bot's comments
     for comment in user.comments.new(limit=None):
-        if comment.score < -1 and comment.id not in history['deleted']:
+        if comment.score < -3 and comment.id not in history['deleted']:
             comment.delete()
-            r.redditor(user_name).message('Comment Removed', msg)
             msg = 'Comment removed due to downvotes: {}.'.format(comment.id)
+            r.redditor(user_name).message('Comment Removed', msg)
             print(msg)
             logging.info(msg)
             with open(del_file, 'a') as fh: # Record deleted commented id
