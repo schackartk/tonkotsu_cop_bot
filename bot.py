@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Author : schackartk
 Purpose: A reddit bot for spreading awareness of the misspelling of 'tonkotsu'
