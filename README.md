@@ -1,11 +1,33 @@
 # tonkotsu_cop_bot
 A reddit bot for spreading awareness of the misspelling of "tonkotsu".
 
+## The Problem
+
+In some reddit communities, especially [r/ramen](https://www.reddit.com/r/ramen/), there is a recurring theme of users spelling [tonkotsu](https://en.wikipedia.org/wiki/Tonkotsu_ramen) as "tonkatsu". Several users have expressed interest in a bot that comments on such posts, pointing out the mistake. However, a challenge arises because [tonkatsu](https://en.wikipedia.org/wiki/Tonkatsu) is itself another japanese cuisine item. So, not all instances of the word "tonkatsu" are mistakes!
+
+Just for fun, check out some people posting their [Tonkatsu tonkotsu](https://www.reddit.com/r/ramen/comments/c05j6f/tonkatsu_tonkotsu_ramen/)!
+
+## My Solution
+
+I began to think that I could use a simple conditional statement to correctly identify mistake spelling, at least most of the time. For instance, if "tonkatsu" was followed by the word "broth" or "ramen", then it was probably a mistake. If "tonkatsu" was followed by "pork cutlet", it probably was not a mistake.
+
+I quickly realized that this solution lacked elegance, but was on the right track. What I needed was an automated way for a program to learn those patterns (and many more) on its own; *machine learning*.
+
+The simple, yet surprisingly effective algorithm chosen for the task is a naïve Bayes model. I trained the model by finding all the posts I could in [r/ramen](https://www.reddit.com/r/ramen/), [r/food](https://www.reddit.com/r/food/), and [r/FoodPorn](https://www.reddit.com/r/FoodPorn/) that contained the word "tonkatsu", and labelling them as true tonkatsu, or mistaken tonkotsu. The model finds which other words in the title are correlated with which label (correct vs. incorrect spelling). Once trained, the model can be used to assign a predicted label to new titles it's never seen before.
+
+This model is imported into the bot script which signs into reddit and scans several subreddits' new posts. If "tonkatsu" is found, then the model is used to predict if the spelling was a mistake. If it predicts it is, then it comments, if not it moves on. In either case it sends itself and my account information about the action taken. In this way, I can use this as more training data to improve the model.
+
+As a final consideration, the bot monitors the scores of its previous comments. If they get too many downvotes, the bot deletes the comment. In this way, if the bot mistakenly comments on true *tonkatsu*, the community has a way of easily removing it.
+
+## Scripts Overview
+
 `bayes.py`: Learn a multinomial naive bayes model trained on a bag-of-words from submission titles.
 
-`bot.py`: Interact with reddit to get titles, use model created by `bayes.py` to predict if title has "tonkatsu" typo, comment if so.
+`bot.py`: Interact with reddit to get titles, use model created by `bayes.py` to predict if title has typo, comment if so.
 
-`test-bot.py`: Test suite for `bot.py`.
+`test_bot.py`: Test suite for `bot.py`.
+
+`sched.sh`: Shell script executed by CRON for scheduled running of `bot.py`.
 
 ## `bayes.py`
 ```
