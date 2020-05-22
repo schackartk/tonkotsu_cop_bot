@@ -21,7 +21,7 @@ As a final consideration, the bot monitors the scores of its previous comments. 
 
 ## Scripts Overview
 
-`bayes.py`: Learn a multinomial naive bayes model trained on a bag-of-words from submission titles.
+`bayes.py`: Train a multinomial naïve bayes model trained on bag-of-words from submission titles.
 
 `bot.py`: Interact with reddit to get titles, use model created by `bayes.py` to predict if title has typo, comment if so.
 
@@ -29,9 +29,14 @@ As a final consideration, the bot monitors the scores of its previous comments. 
 
 `sched.sh`: Shell script executed by CRON for scheduled running of `bot.py`.
 
+`data/`
+* `all_labeled_data.txt`: Labeled training and testing data.
+* `comment.txt`: Comment string formatted for markdown.
+* `confusion_matrix.svg`: Only used in this README.md.
+
 ## `bayes.py`
 ```
-$ python bayes.py -h
+$ ./bayes.py -h
 usage: bayes.py [-h] [-d FILE] [-o FILE] [-t FILE] [-s FLOAT]
 
 Generate bayesian model for tonkatsu
@@ -65,10 +70,23 @@ Finally, a pickle (`--out`) is produced containing the model, the test data (inc
 
 Unfortunately, since the size of data is small (n=78 including test data), model accuracy upon testing can vary run-to-run (of `bayes.py`, not `bot.py`). Assessed accuracy is almost always >75%. When model is generated for actual use, less data are split for testing to increase training data size.
 
+### Expected Behavior
+```
+$ ./bayes.py
+Extracting features
+Training model
+Testing model
+Model accuracy: 87.5%
+Assessing confusion matrix
+Removing previous test data file.
+Saving test data.
+Saving pickle
+```
+
 
 ## `bot.py`
 ```
-$ python bot.py -h
+$ ./bot.py -h
 usage: bot.py [-h] [-c FILE] [-D] [-d FILE] [-l FILE] [-m PKL] [-p FILE]
 
 Run the Tonkotsu Police Bot
@@ -100,3 +118,48 @@ Next, the bot checks its previous comments' statuses. If they have been downvote
 During the above steps, logging takes place. By default, only `logging.info` is used, but `logging.debug` may be activated with `--debug` for more thorough logging to the `--log` file.
 
 Running of the bot is accomplished with CRON instead of continuously running the script and utilizing `submission.stream()` in PRAW. This is to avoid known issues related to that function's inability to handle exceptions and continue or restart the stream.
+
+### Expected Behavior
+```
+$ ./bot.py
+Logging in... log in successful.
+Logged in as TonkotsuOrTonkatsu.
+Scanning...
+
+Tonkatsu found in post: go9w3o.
+Post title: "I made Pork Tonkatsu with Stir Fried Cabbage and a Warm Golden Beet and Sesame Salad".
+Model predicted correct spelling.
+Not commenting.
+
+Done scanning.
+Commented on 0 posts.
+
+Checking to purge comments...
+Done purging.
+```
+
+
+## `test_bot.py`
+```
+$ python3 -m pytest -v test_bot.py
+============================= test session starts =============================
+platform win32 -- Python 3.7.4, pytest-5.4.1, py-1.8.1, pluggy-0.13.1 -- C:\Users\Kenny's Spectre\.conda\pkgs\python-3.7.4-h5263a28_0\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\Kenny's Spectre\Documents\Personal\Projects\reddit_bot
+plugins: dash-1.9.1
+collecting ... collected 3 items
+
+test_bot.py::test_usage PASSED                                           [ 33%]
+test_bot.py::test_bad_input PASSED                                       [ 66%]
+test_bot.py::test_predict PASSED                                         [100%]
+
+============================= 3 passed in 44.06s ==============================
+```
+
+Test various functionalities of `bot.py`. When things start going wrong, this can help figure out where it is failing. Also good for quickly checking if script changes break previous functionality. Currently testing is sparse.
+
+## `sched.sh`
+
+Shell script is executed on a schedule due to entry in CRON Table (`crontab -e`)
+
+Since `cron` runs from `home`, shell script `cd`'s into the bot directory. The Python `env`ironment is activated, `bot.py` is executed, and the `env` is deactivated. Accomplishing these multiple commands in a shell script was easier than via cron.
