@@ -140,6 +140,10 @@ Done purging.
 
 
 ## `test_bot.py`
+
+Test various functionalities of `bot.py`. When things start going wrong, this can help figure out where it is failing. Also good for quickly checking if script changes break previous functionality. Currently testing is sparse.
+
+### Expected Behavior
 ```
 $ python3 -m pytest -v test_bot.py
 ============================= test session starts =============================
@@ -155,8 +159,6 @@ test_bot.py::test_predict PASSED                                         [100%]
 
 ============================= 3 passed in 44.06s ==============================
 ```
-
-Test various functionalities of `bot.py`. When things start going wrong, this can help figure out where it is failing. Also good for quickly checking if script changes break previous functionality. Currently testing is sparse.
 
 ## `sched.sh`
 
