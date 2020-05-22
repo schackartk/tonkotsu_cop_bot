@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Author : schackartk
 Purpose: A Bayes Model for Tonkatsu occurence classification
