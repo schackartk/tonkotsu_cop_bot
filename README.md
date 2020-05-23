@@ -147,11 +147,10 @@ Test various functionalities of `bot.py`. When things start going wrong, this ca
 ```
 $ python3 -m pytest -v test_bot.py
 ============================= test session starts =============================
-platform win32 -- Python 3.7.4, pytest-5.4.1, py-1.8.1, pluggy-0.13.1 -- C:\Users\Kenny's Spectre\.conda\pkgs\python-3.7.4-h5263a28_0\python.exe
+platform linux -- Python 3.7.3, pytest-5.4.2, py-1.8.1, pluggy-0.13.1 -- /home/pi/Documents/reddit_bots/tonkotsu_cop_bot/env/bin/python3
 cachedir: .pytest_cache
-rootdir: C:\Users\Kenny's Spectre\Documents\Personal\Projects\reddit_bot
-plugins: dash-1.9.1
-collecting ... collected 3 items
+rootdir: /home/pi/Documents/reddit_bots/tonkotsu_cop_bot
+collected 3 items
 
 test_bot.py::test_usage PASSED                                           [ 33%]
 test_bot.py::test_bad_input PASSED                                       [ 66%]
