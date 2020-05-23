@@ -164,13 +164,27 @@ def predict(text, model_file):
     prediction = model.predict(text_features)
     
     return prediction
-
+# --------------------------------------------------
+def react_to_post(post, pred, cmt_file, id_file):
+    """comment on post, and log"""
+    
+    str1 = 'Model predicted {} spelling.'.format('correct' if pred else 'incorrect')
+    str2 = '{}ommenting.'. format('C' if pred else 'Not c')
+    print(str1)
+    print('{}..\n'.format(str2))
+    logging.info('{} {}'.format(str1, str2))
+    save_id(id_file, post.id, pred) # Store post id
+    cmt = get_comment(cmt_file)
+    
+    if pred:
+        post.reply(cmt) # Leave reddit comment
+        logging.info('Commented on post.')
+     
 # --------------------------------------------------
 def investigate(r, history, id_file, model_file, cmt_file):
     """Look for tonkotsu misspelling"""
     ct = 0 # Number of instances corrected
     
-    cmt = get_comment(cmt_file)
     user_name = config.username
     human_name = config.human_acct
     
@@ -193,20 +207,13 @@ def investigate(r, history, id_file, model_file, cmt_file):
             logging.info('Post title: {}'.format(post.title))
             
             # Use Bayesian model to decide if should comment
-            if int(predict(post_title, model_file)): # Decided to comment
-                print('Model predicted mistake spelling.')
-                print('Commenting...\n')
-                logging.info('Model predicted mistake spelling. Commenting.')
+            pred = int(predict(post_title, model_file))
+            if pred: # Decided to comment
+                react_to_post(post, pred, cmt_file, id_file)
                 ct += 1 # Increase count for reporting
-                save_id(id_file, post.id, '1') # Store post id
-                post.reply(cmt) # Leave reddit comment
-                logging.info('Commented on post.')
                 msg = 'Commented on post'
             else: # Decided not to comment
-                print('Model predicted correct spelling.')
-                print('Not commenting.\n')
-                logging.info('Model predicted correct spelling. No comment.')
-                save_id(id_file, post.id, '0')
+                react_to_post(post, pred, cmt_file, id_file)
                 msg = 'Post predicted as correct'
             
             full_msg = '{}: [{}]({})\n\n"{}"'.format(msg, post.id, post.url, post.title)
