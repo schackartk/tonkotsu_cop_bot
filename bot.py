@@ -216,7 +216,7 @@ def investigate(r, history, id_file, model_file, cmt_file):
                 react_to_post(post, pred, cmt_file, id_file)
                 msg = 'Post predicted as correct'
             
-            full_msg = '{}: [{}]({})\n\n"{}"'.format(msg, post.id, post.url, post.title)
+            full_msg = '{}: [{}]({})\n\n"{}"'.format(msg, post.id, post.permalink, post.title)
             
             # Send messages notifying decision
             r.redditor(user_name).message('Tonkatsu Found', full_msg)
