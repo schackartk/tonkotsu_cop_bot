@@ -9,6 +9,7 @@ Run using python3 -m pytest -v test_bot.py
 """
 
 import bot    # My bot program, to be tested
+import config # Login config file
 import os     # Check for files
 import pytest # Testing
 import random # Generate random string
@@ -51,6 +52,13 @@ def test_bad_input():
     rv, out = getstatusoutput('{} -p {}'.format(prg, bad_file ))
     assert rv > 0
     assert out == 'File: "{}" not found'.format(bad_file)
+    
+# --------------------------------------------------
+def test_login():
+    """check ability to log in to reddit"""
+    
+    reddit_instance = bot.bot_login()
+    assert str(type(reddit_instance)) == "<class 'praw.reddit.Reddit'>"
     
 # --------------------------------------------------
 def test_predict():

@@ -133,13 +133,13 @@ def bot_login():
                 client_id = config.client_id,
                 client_secret = config.client_secret,
                 user_agent = 'Tonkotsu Police v0.1')
-    
     print('log in successful.')
     print('Logged in as {}.'.format(config.username))
     logging.debug('log in successful.')
     logging.debug('Logged in as {}.'.format(config.username))
     
     return r
+    
 
 # --------------------------------------------------
 def predict(text, model_file):
@@ -164,7 +164,7 @@ def predict(text, model_file):
 def react_to_post(post, pred, cmt_file, id_file):
     """comment on post, and log"""
     
-    str1 = 'Model predicted {} spelling.'.format('correct' if pred else 'incorrect')
+    str1 = 'Model predicted {}correct spelling.'.format('in' if pred else '')
     str2 = '{}ommenting.'. format('C' if pred else 'Not c')
     print(str1)
     print('{}..\n'.format(str2))
@@ -279,9 +279,10 @@ def main():
             die('File: "{}" not found'.format(f))
       
     # Log in to reddit
-    r = bot_login()
+    
     
     try:
+        r = bot_login()
         investigate(r, id_file, model_file, msg_file)
         purge(r, del_file)
         logging.info('Logging off.\n')
