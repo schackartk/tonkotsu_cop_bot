@@ -82,11 +82,10 @@ def die(msg='Something bad happened'):
     sys.exit(1)
     
 # --------------------------------------------------
-def get_history(id_file, del_file):
+def get_history(id_file):
     """Get information on bot action history from files"""
     
     id_list = []
-    del_list = []
     
     # Make previously detected id_list from id_file contents
     with open(id_file, 'r') as fh:
@@ -94,16 +93,8 @@ def get_history(id_file, del_file):
             if line:
                 post_id, _ = line.split('\t')
                 id_list.append(post_id)
-    
-    # Make del_list from del_file, deleted bot comments
-    with open(del_file, 'r') as fh:
-        for line in fh.read().splitlines():
-            del_list.append(line)
-            
-    # Make history dicionary, keys lead to lists
-    history = {'post_id': id_list, 'deleted': del_list}
         
-    return history
+    return id_list
 
 # --------------------------------------------------
 def get_comment(msg_file):
@@ -186,7 +177,7 @@ def react_to_post(post, pred, cmt_file, id_file):
         logging.info('Commented on post.')
      
 # --------------------------------------------------
-def investigate(r, history, id_file, model_file, cmt_file):
+def investigate(r, id_file, model_file, cmt_file):
     """Look for tonkotsu misspelling"""
     ct = 0 # Number of instances corrected
     
@@ -199,13 +190,16 @@ def investigate(r, history, id_file, model_file, cmt_file):
     # Collect newest 25 posts
     posts = r.subreddit('test+ramen+food+foodporn').new()
     
+    # Get previously assessed post id's
+    id_list = get_history(id_file)
+    
     #Iterate through posts
     for post in posts:
         
         post_title = post.title.lower()
         
         # Check for string, make sure have not commented before
-        if 'tonkatsu' in post_title and post.id not in history['post_id']: 
+        if 'tonkatsu' in post_title and post.id not in id_list: 
             print('Tonkatsu found in post: {}.'.format(post.id))
             print('Post title: "{}".'.format(post.title))
             logging.info('Tonktasu found in post: {}.'.format(post.id))
@@ -237,8 +231,9 @@ def investigate(r, history, id_file, model_file, cmt_file):
     logging.info('Commented on {} post{}.'.format(ct, '' if ct == 1 else 's'))
     
 # --------------------------------------------------
-def purge(r, history, del_file):
+def purge(r, del_file):
     """Go through bot comments and delete downvoted ones"""
+    
     user_name = config.username
     user = r.redditor(user_name)
     
@@ -247,7 +242,7 @@ def purge(r, history, del_file):
     
     # Go through bot's comments
     for comment in user.comments.new(limit=None):
-        if comment.score < -3 and comment.id not in history['deleted']:
+        if comment.score < -1:
             comment.delete()
             msg = 'Comment removed due to downvotes: {}.'.format(comment.id)
             r.redditor(user_name).message('Comment Removed', msg)
@@ -282,17 +277,13 @@ def main():
     for f in [id_file, del_file, model_file, msg_file]:
         if not os.path.isfile(f):
             die('File: "{}" not found'.format(f))
-    
-    # Get history from files
-    # Make 'history' dictionary with keys: post_id, deleted
-    history = get_history(id_file, del_file)
       
     # Log in to reddit
     r = bot_login()
     
     try:
-        investigate(r, history, id_file, model_file, msg_file)
-        purge(r, history, del_file)
+        investigate(r, id_file, model_file, msg_file)
+        purge(r, del_file)
         logging.info('Logging off.\n')
     except:
         print('Resuming in 10 seconds...')
