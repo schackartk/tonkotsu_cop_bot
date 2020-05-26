@@ -18,7 +18,7 @@ import string # strings?
 
 from subprocess import getstatusoutput, getoutput
 
-prg = "python3 bot.py"
+prg = "python bot.py"
 
 # --------------------------------------------------
 def random_string():
@@ -59,6 +59,14 @@ def test_login():
     
     reddit_instance = bot.bot_login()
     assert str(type(reddit_instance)) == "<class 'praw.reddit.Reddit'>"
+    
+# --------------------------------------------------
+def test_post_ret():
+    """check ability to retrieve posts"""
+    
+    r = bot.bot_login()
+    posts = r.subreddit('test+ramen+food+foodporn').new()
+    assert str(type(posts)) == "<class 'praw.models.listing.generator.ListingGenerator'>"
     
 # --------------------------------------------------
 def test_predict():
