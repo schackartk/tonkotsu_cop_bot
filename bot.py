@@ -83,21 +83,24 @@ def die(msg='Something bad happened'):
     
 # --------------------------------------------------
 def get_history(id_file, del_file):
-    
     """Get information on bot action history from files"""
+    
     id_list = []
     del_list = []
-        
+    
+    # Make previously detected id_list from id_file contents
     with open(id_file, 'r') as fh:
         for line in fh.read().splitlines():
             if line:
                 post_id, _ = line.split('\t')
                 id_list.append(post_id)
-   
+    
+    # Make del_list from del_file, deleted bot comments
     with open(del_file, 'r') as fh:
         for line in fh.read().splitlines():
             del_list.append(line)
             
+    # Make history dicionary, keys lead to lists
     history = {'post_id': id_list, 'deleted': del_list}
         
     return history
@@ -106,6 +109,7 @@ def get_history(id_file, del_file):
 def get_comment(msg_file):
     """Get canned bot comment"""
     
+    # Retrieve comment string from msg_file
     with open(msg_file)as fh:
         cmt = fh.read()
     
@@ -117,6 +121,7 @@ def save_id(id_file, post_id, pred):
     
     logging.debug('Saving ID\'s to "{}"'.format(id_file))
     
+    # Save id and predicted classification to id_file
     with open(id_file, 'a') as fh:
         print('{}\t{}'.format(post_id, pred), file=fh)
         
