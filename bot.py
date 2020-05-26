@@ -83,7 +83,7 @@ def die(msg='Something bad happened'):
     
 # --------------------------------------------------
 def get_history(id_file):
-    """Get information on bot action history from files"""
+    """Get information on bot action history from file"""
     
     id_list = []
     
