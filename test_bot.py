@@ -40,6 +40,7 @@ def test_usage():
 # --------------------------------------------------
 def test_bad_input():
     """bad input"""
+    
     bad_file = random_string()
     rv, out = getstatusoutput('{} -c {}'.format(prg, bad_file ))
     assert rv > 0
@@ -54,6 +55,15 @@ def test_bad_input():
     assert out == 'File: "{}" not found'.format(bad_file)
     
 # --------------------------------------------------
+def test_get_history():
+    """retrieve previously analyzed post id's"""
+    
+    id_file = 'data/id_file.txt'
+    id_list = bot.get_history(id_file)
+    
+    assert str(type(id_list)) == "<class 'list'>"
+    
+# --------------------------------------------------
 def test_login():
     """check ability to log in to reddit"""
     
@@ -64,9 +74,11 @@ def test_login():
 def test_post_ret():
     """check ability to retrieve posts"""
     
+    post_type = "<class 'praw.models.listing.generator.ListingGenerator'>"
+    
     r = bot.bot_login()
     posts = r.subreddit('test+ramen+food+foodporn').new()
-    assert str(type(posts)) == "<class 'praw.models.listing.generator.ListingGenerator'>"
+    assert str(type(posts)) == post_type
     
 # --------------------------------------------------
 def test_predict():
