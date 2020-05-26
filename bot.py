@@ -278,9 +278,6 @@ def main():
         if not os.path.isfile(f):
             die('File: "{}" not found'.format(f))
       
-    # Log in to reddit
-    
-    
     try:
         r = bot_login()
         investigate(r, id_file, model_file, msg_file)
