@@ -160,6 +160,7 @@ def predict(text, model_file):
     prediction = model.predict(text_features)
     
     return prediction
+
 # --------------------------------------------------
 def react_to_post(post, pred, cmt_file, id_file):
     """comment on post, and log"""
