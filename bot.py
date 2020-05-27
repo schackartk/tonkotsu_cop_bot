@@ -163,7 +163,7 @@ def predict(text, model_file):
 
 # --------------------------------------------------
 def react_to_post(post, pred, cmt_file, id_file):
-    """comment on post, and log"""
+    """save post info, comment if predicted mistake"""
     
     str1 = 'Model predicted {}correct spelling.'.format('in' if pred else '')
     str2 = '{}ommenting.'. format('C' if pred else 'Not c')
@@ -176,7 +176,24 @@ def react_to_post(post, pred, cmt_file, id_file):
     if pred:
         post.reply(cmt) # Leave reddit comment
         logging.info('Commented on post.')
-     
+
+# --------------------------------------------------
+def react_to_summons(r, cmt_file, id_file, mention):
+    """comment from summons"""
+    
+    print('Responding to summon.')
+    logging.info('Responding to summon.')
+    save_id(id_file, parent_id, 'summon')
+    cmt = get_comment(cmt_file)
+    
+    parent_id = mention.parent_id
+    if 't3_' in parent_id:
+        # respond to original post
+        post_id = parent_id[3:]
+        full_cmt = cmt + 
+        r.submission(id=post_id).reply()
+        mention.reply('')
+
 # --------------------------------------------------
 def investigate(r, id_file, model_file, cmt_file):
     """Look for tonkotsu misspelling"""
@@ -185,16 +202,16 @@ def investigate(r, id_file, model_file, cmt_file):
     user_name = config.username
     human_name = config.human_acct
     
+    # Get previously assessed post id's
+    id_list = get_history(id_file)
+    
     print('Scanning...\n')
     logging.info('Scanning posts...')
     
     # Collect newest 25 posts
     posts = r.subreddit('test+ramen+food+foodporn').new()
     
-    # Get previously assessed post id's
-    id_list = get_history(id_file)
-    
-    #Iterate through posts
+    # Iterate through posts
     for post in posts:
         
         post_title = post.title.lower()
@@ -230,6 +247,29 @@ def investigate(r, id_file, model_file, cmt_file):
     print('Commented on {} post{}.\n'.format(ct, '' if ct == 1 else 's'))
     logging.info('Done scanning.')
     logging.info('Commented on {} post{}.'.format(ct, '' if ct == 1 else 's'))
+    
+# --------------------------------------------------
+def respond_summons(r, id_file, cmt_file):
+    """Look for tonkotsu misspelling"""
+    
+    user_name = config.username
+    human_name = config.human_acct
+    
+    print('Checking for summons...\n')
+    logging.info('Checking for summons...')
+    
+    id_list = get_history(id_file)
+    
+    mentions = r.inbox.mentions()
+    
+    for mention in mentions:
+
+        parent_id = mention.parent_id
+        
+        if parent_id not in id_list:
+            
+            react_to_summons(r, cmt_file, id_file, mention)
+
     
 # --------------------------------------------------
 def purge(r, del_file):
@@ -282,6 +322,7 @@ def main():
     try:
         r = bot_login()
         investigate(r, id_file, model_file, msg_file)
+        respond_summons(r, id_file, msg_file)
         purge(r, del_file)
         logging.info('Logging off.\n')
     except:
