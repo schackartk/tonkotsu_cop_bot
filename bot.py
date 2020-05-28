@@ -141,7 +141,6 @@ def bot_login():
     
     return r
     
-
 # --------------------------------------------------
 def predict(text, model_file):
     """Use previously trained model to classify title text"""
@@ -179,7 +178,7 @@ def react_to_post(post, pred, cmt_file, id_file):
         logging.info('Commented on post.')
 
 # --------------------------------------------------
-def react_to_summons(r, cmt_file, id_file, mention):
+def react_to_summon(r, cmt_file, id_file, mention):
     """comment from summons"""
     
     parent_id = mention.parent_id
@@ -199,7 +198,7 @@ def react_to_summons(r, cmt_file, id_file, mention):
         logging.info('Commented on summoning')
 
 # --------------------------------------------------
-def investigate(r, id_file, model_file, cmt_file):
+def investigate(r, cmt_file, id_file, model_file):
     """Look for tonkotsu misspelling"""
     ct = 0 # Number of instances corrected
     
@@ -253,7 +252,7 @@ def investigate(r, id_file, model_file, cmt_file):
     logging.info('Commented on {} post{}.'.format(ct, '' if ct == 1 else 's'))
     
 # --------------------------------------------------
-def check_summons(r, id_file, cmt_file):
+def check_summons(r, cmt_file, id_file):
     """Check for username mentions / bot summons"""
     
     user_name = config.username
@@ -278,9 +277,9 @@ def check_summons(r, id_file, cmt_file):
             msg = 'Summon found.'
             print('{}.'.format(msg))
             logging.info('{}.'.format(msg))
-            react_to_summons(r, cmt_file, id_file, mention)
+            react_to_summon(r, cmt_file, id_file, mention)
             
-            post_add = re.sub('\?context=\d+','', mention.context) # Post address, no comment info
+            post_add = re.sub('[?]context=\d+','', mention.context) # Post address, no comment info
             full_msg = '{}: [{}]({})\n\n"{}"'.format(msg, mention.id, post_add, mention.body)
             
             # Send messages notifying decision
@@ -325,7 +324,7 @@ def main():
     del_file = args.deleted
     log_file = args.log
     model_file = args.model
-    msg_file = args.comment
+    cmt_file = args.comment
     
     # Set up logging configurations, debug or just info
     logging.basicConfig(
@@ -335,14 +334,14 @@ def main():
     )
     
     # Check for files
-    for f in [id_file, del_file, model_file, msg_file]:
+    for f in [id_file, del_file, model_file, cmt_file]:
         if not os.path.isfile(f):
             die('File: "{}" not found'.format(f))
       
     try:
         r = bot_login()
-        investigate(r, id_file, model_file, msg_file)
-        check_summons(r, id_file, msg_file)
+        investigate(r, cmt_file, id_file, model_file)
+        check_summons(r, cmt_file, id_file)
         purge(r, del_file)
         logging.info('Logging off.\n')
     except:
