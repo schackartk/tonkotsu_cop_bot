@@ -150,7 +150,7 @@ $ python3 -m pytest -v test_bot.py
 platform linux -- Python 3.7.3, pytest-5.4.2, py-1.8.1, pluggy-0.13.1 -- /home/pi/Documents/reddit_bots/tonkotsu_cop_bot/env/bin/python3
 cachedir: .pytest_cache
 rootdir: /home/pi/Documents/reddit_bots/tonkotsu_cop_bot
-collected 3 items
+collected 6 items
 
 test_bot.py::test_usage PASSED                                           [ 16%]
 test_bot.py::test_bad_input PASSED                                       [ 33%]
