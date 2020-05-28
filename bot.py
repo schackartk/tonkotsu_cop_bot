@@ -12,6 +12,7 @@ import logging   # Generate log of activity
 import os        # Check for and delete files
 import pickle    # Read pickled model file
 import praw      # Interact with reddit
+import re
 import sys       # Handle errors
 import time      # Time actions
 
@@ -181,18 +182,19 @@ def react_to_post(post, pred, cmt_file, id_file):
 def react_to_summons(r, cmt_file, id_file, mention):
     """comment from summons"""
     
+    parent_id = mention.parent_id
+    summoner = mention.author
+    cmt = get_comment(cmt_file)
+    
     print('Responding to summon.')
     logging.info('Responding to summon.')
     save_id(id_file, parent_id, 'summon')
-    cmt = get_comment(cmt_file)
-    
-    parent_id = mention.parent_id
+
     if 't3_' in parent_id:
         # respond to original post
         post_id = parent_id[3:]
-        full_cmt = cmt + 
-        r.submission(id=post_id).reply()
-        mention.reply('')
+        r.submission(id=post_id).reply(cmt)
+        mention.reply('Thank you /u/{} for the tip!'.format(summoner))
 
 # --------------------------------------------------
 def investigate(r, id_file, model_file, cmt_file):
@@ -249,28 +251,46 @@ def investigate(r, id_file, model_file, cmt_file):
     logging.info('Commented on {} post{}.'.format(ct, '' if ct == 1 else 's'))
     
 # --------------------------------------------------
-def respond_summons(r, id_file, cmt_file):
-    """Look for tonkotsu misspelling"""
+def check_summons(r, id_file, cmt_file):
+    """Check for username mentions / bot summons"""
     
     user_name = config.username
     human_name = config.human_acct
     
-    print('Checking for summons...\n')
+    print('Checking for summons...')
     logging.info('Checking for summons...')
     
+    # Get previously commented on posts
     id_list = get_history(id_file)
     
+    # Get bot username mentions
     mentions = r.inbox.mentions()
     
+    # Deal with username mentions
     for mention in mentions:
 
-        parent_id = mention.parent_id
+        parent_id = mention.parent_id # Get the id of what was commented on
+        post_id = parent_id[3:] # Comments are prefaced with 't3_' or 't1_'
         
-        if parent_id not in id_list:
-            
+        if not (parent_id or post_id) in id_list:
+            msg = 'Summon found'
+            print('{}.'.format(msg))
+            logging.info('{}.'.format(msg))
             react_to_summons(r, cmt_file, id_file, mention)
+            
+            print('Commented.')
+            post_add = re.sub('\?context=\d+','', mention.context) # Post address, no comment info
+            full_msg = '{}: [{}]({})\n\n"{}"'.format(msg, mention.id, post_add, mention.body)
+            
+            # Send messages notifying decision
+            r.redditor(user_name).message('Bot Summoned', full_msg)
+            r.redditor(human_name).message('Bot Summoned', full_msg)
+            print('Sent messages')
+            logging.info('Sent messages.')
+            
+    print('Done checking for summons.')
+    logging.info('Done checking for .')
 
-    
 # --------------------------------------------------
 def purge(r, del_file):
     """Go through bot comments and delete downvoted ones"""
@@ -322,7 +342,7 @@ def main():
     try:
         r = bot_login()
         investigate(r, id_file, model_file, msg_file)
-        respond_summons(r, id_file, msg_file)
+        check_summons(r, id_file, msg_file)
         purge(r, del_file)
         logging.info('Logging off.\n')
     except:
