@@ -186,7 +186,7 @@ def react_to_summons(r, cmt_file, id_file, mention):
     summoner = mention.author
     cmt = get_comment(cmt_file)
     
-    print('Responding to summon.')
+    print('Responding to summon.\n')
     logging.info('Responding to summon.')
     save_id(id_file, parent_id, 'summon')
 
@@ -194,7 +194,9 @@ def react_to_summons(r, cmt_file, id_file, mention):
         # respond to original post
         post_id = parent_id[3:]
         r.submission(id=post_id).reply(cmt)
+        logging.info('Commented on post.')
         mention.reply('Thank you /u/{} for the tip!'.format(summoner))
+        logging.info('Commented on summoning')
 
 # --------------------------------------------------
 def investigate(r, id_file, model_file, cmt_file):
@@ -257,7 +259,7 @@ def check_summons(r, id_file, cmt_file):
     user_name = config.username
     human_name = config.human_acct
     
-    print('Checking for summons...')
+    print('Checking for summons...\n')
     logging.info('Checking for summons...')
     
     # Get previously commented on posts
@@ -273,23 +275,21 @@ def check_summons(r, id_file, cmt_file):
         post_id = parent_id[3:] # Comments are prefaced with 't3_' or 't1_'
         
         if not (parent_id or post_id) in id_list:
-            msg = 'Summon found'
+            msg = 'Summon found.'
             print('{}.'.format(msg))
             logging.info('{}.'.format(msg))
             react_to_summons(r, cmt_file, id_file, mention)
             
-            print('Commented.')
             post_add = re.sub('\?context=\d+','', mention.context) # Post address, no comment info
             full_msg = '{}: [{}]({})\n\n"{}"'.format(msg, mention.id, post_add, mention.body)
             
             # Send messages notifying decision
             r.redditor(user_name).message('Bot Summoned', full_msg)
             r.redditor(human_name).message('Bot Summoned', full_msg)
-            print('Sent messages')
             logging.info('Sent messages.')
             
     print('Done checking for summons.')
-    logging.info('Done checking for .')
+    logging.info('Done checking for summons.')
 
 # --------------------------------------------------
 def purge(r, del_file):
