@@ -152,11 +152,14 @@ cachedir: .pytest_cache
 rootdir: /home/pi/Documents/reddit_bots/tonkotsu_cop_bot
 collected 3 items
 
-test_bot.py::test_usage PASSED                                           [ 33%]
-test_bot.py::test_bad_input PASSED                                       [ 66%]
+test_bot.py::test_usage PASSED                                           [ 16%]
+test_bot.py::test_bad_input PASSED                                       [ 33%]
+test_bot.py::test_get_history PASSED                                     [ 50%]
+test_bot.py::test_login PASSED                                           [ 66%]
+test_bot.py::test_post_ret PASSED                                        [ 83%]
 test_bot.py::test_predict PASSED                                         [100%]
 
-============================= 3 passed in 44.06s ==============================
+============================= 6 passed in 11.44s ==============================
 ```
 
 ## `sched.sh`
