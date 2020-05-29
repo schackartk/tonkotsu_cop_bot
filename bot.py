@@ -86,16 +86,16 @@ def die(msg='Something bad happened'):
 def get_history(id_file):
     """Get information on bot action history from file"""
     
-    id_list = []
+    id_dict = {}
     
     # Make previously detected id_list from id_file contents
     with open(id_file, 'r') as fh:
         for line in fh.read().splitlines():
             if line:
-                post_id, _ = line.split('\t')
-                id_list.append(post_id)
+                post_id, pred = line.split('\t')
+                id_dict[post_id]=pred
         
-    return id_list
+    return id_dict
 
 # --------------------------------------------------
 def get_comment(msg_file):
@@ -182,12 +182,14 @@ def react_to_summon(r, cmt_file, id_file, mention):
     """comment from summons"""
     
     parent_id = mention.parent_id
+    post_id = parent_id[3:]
     summoner = mention.author
     cmt = get_comment(cmt_file)
     
     print('Responding to summon.\n')
     logging.info('Responding to summon.')
-    save_id(id_file, parent_id, 'summon')
+    save_id(id_file, parent_id, 's')
+    save_id(id_file, post_id, 's')
 
     if 't3_' in parent_id:
         # respond to original post
@@ -206,7 +208,7 @@ def investigate(r, cmt_file, id_file, model_file):
     human_name = config.human_acct
     
     # Get previously assessed post id's
-    id_list = get_history(id_file)
+    id_dict = get_history(id_file)
     
     print('Scanning...\n')
     logging.info('Scanning posts...')
@@ -220,7 +222,7 @@ def investigate(r, cmt_file, id_file, model_file):
         post_title = post.title.lower()
         
         # Check for string, make sure have not commented before
-        if 'tonkatsu' in post_title and post.id not in id_list: 
+        if 'tonkatsu' in post_title and post.id not in id_dict.keys(): 
             print('Tonkatsu found in post: {}.'.format(post.id))
             print('Post title: "{}".'.format(post.title))
             logging.info('Tonktasu found in post: {}.'.format(post.id))
@@ -262,7 +264,7 @@ def check_summons(r, cmt_file, id_file):
     logging.info('Checking for summons...')
     
     # Get previously commented on posts
-    id_list = get_history(id_file)
+    id_dict = get_history(id_file)
     
     # Get bot username mentions
     mentions = r.inbox.mentions()
@@ -273,7 +275,14 @@ def check_summons(r, cmt_file, id_file):
         parent_id = mention.parent_id # Get the id of what was commented on
         post_id = parent_id[3:] # Comments are prefaced with 't3_' or 't1_'
         
-        if not (parent_id or post_id) in id_list:
+        # Check if this summon has been acted upon before
+        if parent_id not in id_dict.keys():
+            
+            # Check if bot has commented on the post itself before
+            if post_id in id_dict.keys():
+                if id_dict[post_id] == 1:
+                    break
+            
             msg = 'Summon found.'
             print('{}.'.format(msg))
             logging.info('{}.'.format(msg))
