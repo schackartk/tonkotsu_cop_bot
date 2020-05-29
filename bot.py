@@ -280,7 +280,7 @@ def check_summons(r, cmt_file, id_file):
             
             # Check if bot has commented on the post itself before
             if post_id in id_dict.keys():
-                if id_dict[post_id] == 1:
+                if id_dict[post_id] != 0:
                     break
             
             msg = 'Summon found.'
