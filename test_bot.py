@@ -61,7 +61,7 @@ def test_get_history():
     id_file = 'data/id_file.txt'
     id_list = bot.get_history(id_file)
     
-    assert str(type(id_list)) == "<class 'list'>"
+    assert str(type(id_list)) == "<class 'dict'>"
     
 # --------------------------------------------------
 def test_login():
