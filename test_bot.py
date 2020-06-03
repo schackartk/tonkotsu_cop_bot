@@ -52,9 +52,9 @@ def test_get_history():
     """retrieve previously analyzed post id's"""
     
     id_file = 'data/id_file.txt'
-    id_list = bot.get_history(id_file)
+    id_dict = bot.get_history(id_file)
     
-    assert str(type(id_list)) == "<class 'dict'>"
+    assert str(type(id_dict)) == "<class 'dict'>"
     
 # --------------------------------------------------
 def test_config():
