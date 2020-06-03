@@ -92,3 +92,5 @@ label	id	title
 1	gtqxgf	'Ramen with XianChang sausage and Shoyu. H-Mart fresh Tonkatsu.."
 0	guaqbm	'[homemade] tonkatsu'
 1	gub4jj	'First try at homemade tonkatsu ramen'
+1	guvavs	'[homemade] tonkatsu ramen with some thick cut, melt in your mouth chasu'
+1	gvkuss	'[Homemade] Pork Belly Tonkatsu Ramen'
