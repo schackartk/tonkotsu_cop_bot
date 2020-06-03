@@ -90,4 +90,5 @@ def test_predict():
 def test_runs_defaults():
     """no errors when running with defaults"""
     
-    
+    rv, out = getstatusoutput('{}'.format(prg))
+    assert rv == 0
