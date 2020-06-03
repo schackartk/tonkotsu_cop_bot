@@ -9,7 +9,6 @@ Run using python3 -m pytest -v test_bot.py
 """
 
 import bot    # My bot program, to be tested
-import config # Login config file
 import os     # Check for files
 import pytest # Testing
 import random # Generate random string
@@ -58,6 +57,22 @@ def test_get_history():
     assert str(type(id_list)) == "<class 'dict'>"
     
 # --------------------------------------------------
+def test_config():
+    """check attributes in config.py"""
+    
+    # Assumption is made in bot.py that config.py exists in same directory
+    assert os.path.isfile('config.py')
+    
+    import config # Login config file
+    
+    # Attributes assumed to be present in config.py
+    attr_list = ['username', 'password', 'client_id', 'client_secret', 'human_acct']
+    
+    # Check that imported config.py has those attributes
+    for attr in attr_list:
+        assert hasattr(config, attr)
+
+# --------------------------------------------------
 def test_login():
     """check ability to log in to reddit"""
     
@@ -89,6 +104,8 @@ def test_predict():
 # --------------------------------------------------
 def test_runs_defaults():
     """no errors when running with defaults"""
+    # This high-level test is useful to me, but is quite fragile.
+    # If a required file such as the model is not present, it will fail.
     
     rv, out = getstatusoutput('{}'.format(prg))
     assert rv == 0
