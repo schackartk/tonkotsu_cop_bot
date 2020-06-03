@@ -39,20 +39,14 @@ def test_usage():
     
 # --------------------------------------------------
 def test_bad_input():
-    """bad input"""
+    """bad input for required file names"""
     
     bad_file = random_string()
-    rv, out = getstatusoutput('{} -c {}'.format(prg, bad_file ))
-    assert rv > 0
-    assert out == 'File: "{}" not found'.format(bad_file)
     
-    rv, out = getstatusoutput('{} -d {}'.format(prg, bad_file ))
-    assert rv > 0
-    assert out == 'File: "{}" not found'.format(bad_file)
-    
-    rv, out = getstatusoutput('{} -p {}'.format(prg, bad_file ))
-    assert rv > 0
-    assert out == 'File: "{}" not found'.format(bad_file)
+    for arg_flag in ['c', 'd', 'p', 'm']:
+        rv, out = getstatusoutput('{} -{} {}'.format(prg, arg_flag, bad_file))
+        assert rv > 0
+        assert out == 'File: "{}" not found'.format(bad_file)
     
 # --------------------------------------------------
 def test_get_history():
@@ -91,3 +85,9 @@ def test_predict():
             title = fields[2]
             new_pred = int(bot.predict(title,'data/model.pkl'))
             assert new_pred == old_pred
+
+# --------------------------------------------------
+def test_runs_defaults():
+    """no errors when running with defaults"""
+    
+    
