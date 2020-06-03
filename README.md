@@ -150,16 +150,18 @@ $ python3 -m pytest -v test_bot.py
 platform linux -- Python 3.7.3, pytest-5.4.2, py-1.8.1, pluggy-0.13.1 -- /home/pi/Documents/reddit_bots/tonkotsu_cop_bot/env/bin/python3
 cachedir: .pytest_cache
 rootdir: /home/pi/Documents/reddit_bots/tonkotsu_cop_bot
-collected 6 items
+collected 8 items
 
-test_bot.py::test_usage PASSED                                           [ 16%]
-test_bot.py::test_bad_input PASSED                                       [ 33%]
-test_bot.py::test_get_history PASSED                                     [ 50%]
-test_bot.py::test_login PASSED                                           [ 66%]
-test_bot.py::test_post_ret PASSED                                        [ 83%]
-test_bot.py::test_predict PASSED                                         [100%]
+test_bot.py::test_usage PASSED                                           [ 12%]
+test_bot.py::test_bad_input PASSED                                       [ 25%]
+test_bot.py::test_get_history PASSED                                     [ 37%]
+test_bot.py::test_config PASSED                                          [ 50%]
+test_bot.py::test_login PASSED                                           [ 62%]
+test_bot.py::test_post_ret PASSED                                        [ 75%]
+test_bot.py::test_predict PASSED                                         [ 87%]
+test_bot.py::test_runs_defaults PASSED                                   [100%]
 
-============================= 6 passed in 11.44s ==============================
+============================= 8 passed in 32.75s ==============================
 ```
 
 ## `sched.sh`
