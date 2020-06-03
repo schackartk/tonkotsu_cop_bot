@@ -1,4 +1,4 @@
-^(Beep boop, I am a robot)
+^(Beep boop, I am a bot)
 
 Did you happen to mean [tonkotsu](https://en.wikipedia.org/wiki/Tonkotsu_ramen) instead of [tonkatsu](https://en.wikipedia.org/wiki/Tonkatsu)?
 ***
