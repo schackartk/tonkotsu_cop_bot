@@ -12,7 +12,7 @@ import logging   # Generate log of activity
 import os        # Check for and delete files
 import pickle    # Read pickled model file
 import praw      # Interact with reddit
-import re
+import re        # Regular expressions for post url
 import sys       # Handle errors
 import time      # Time actions
 
@@ -245,7 +245,7 @@ def investigate(r, cmt_file, id_file, model_file):
             r.redditor(human_name).message('Tonkatsu Found', full_msg)
             logging.info('Sent messages.')
             
-            break # Don't  need to hit twice if "tonkatsu" is repeated
+            break # Don't need to hit twice if "tonkatsu" is repeated
             
             
     print('Done scanning.')
@@ -346,16 +346,16 @@ def main():
     for f in [id_file, del_file, model_file, cmt_file]:
         if not os.path.isfile(f):
             die('File: "{}" not found'.format(f))
-      
+    
+    # Perform the real bot actions
     try:
-        r = bot_login()
+        r = bot_login() # Create a reddit instance via PRAW
         investigate(r, cmt_file, id_file, model_file)
         check_summons(r, cmt_file, id_file)
         purge(r, del_file)
         logging.info('Logging off.\n')
     except:
-        print('Resuming in 10 seconds...')
-        time.sleep(10)
+        die('Failed to perform bot actions.')
     
 # --------------------------------------------------
 if __name__ == '__main__':
