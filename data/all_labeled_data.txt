@@ -94,3 +94,4 @@ label	id	title
 1	gub4jj	'First try at homemade tonkatsu ramen'
 1	guvavs	'[homemade] tonkatsu ramen with some thick cut, melt in your mouth chasu'
 1	gvkuss	'[Homemade] Pork Belly Tonkatsu Ramen'
+1	gw76vd	'Birthday Ramen - Spicy Miso Gaelic Tonkatsu-esque'
