@@ -13,13 +13,13 @@ import seaborn as sn
 from sklearn.metrics import confusion_matrix
 
 prg = 'python bayes.py'
-n_iter = 100
+n_iter = 50
 
-# for i in range(n_iter):
-#     out_f = 'data/test/model{}.pkl'.format(i)
-#     test_data = 'data/test/test_data{}.txt'.format(i)
+for i in range(n_iter):
+    out_f = 'data/test/model{}.pkl'.format(i)
+    test_data = 'data/test/test_data{}.txt'.format(i)
 
-#     os.system('{} -o {} -t {} '.format(prg, out_f, test_data))
+    os.system('{} -o {} -t {} '.format(prg, out_f, test_data))
 
 actuals = []
 preds = []
@@ -58,4 +58,7 @@ sn.heatmap(conf, annot=True, cmap=plt.cm.Blues)
 plt.xlabel('Predicted Class')
 plt.ylabel('Actual Class')
 plt.title('Confusion Matrix \nAccuracy: %', size=14)
+plt.show()
+
+plt.boxplot(accuracies)
 plt.show()
