@@ -123,7 +123,7 @@ def generate_model(X_train, X_test, y_train):
 # --------------------------------------------------
 def make_confusion_matrix(model_prediction, y_test, accuracy_per):
     """Plot confusion matrix"""
-    model_confusion = confusion_matrix(model_prediction, y_test)
+    model_confusion = confusion_matrix(y_test, model_prediction)
     plt.figure(figsize = (10,7))
     sn.heatmap(model_confusion, annot=True)
     plt.xlabel('Actual Class')
