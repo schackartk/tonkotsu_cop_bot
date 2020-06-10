@@ -15,7 +15,7 @@ I quickly realized that this solution lacked elegance, but was on the right trac
 
 The simple, yet surprisingly effective algorithm chosen for the task is a naïve Bayes model. I trained the model by finding all the posts I could in [r/ramen](https://www.reddit.com/r/ramen/), [r/food](https://www.reddit.com/r/food/), and [r/FoodPorn](https://www.reddit.com/r/FoodPorn/) that contained the word "tonkatsu", and labelling them as true tonkatsu, or mistaken tonkotsu. The model finds which other words in the title are correlated with which label (correct vs. incorrect spelling). Once trained, the model can be used to assign a predicted label to new titles it's never seen before.
 
-This model is imported into the bot script which signs into reddit and scans several subreddits' new posts. If "tonkatsu" is found, then the model is used to predict if the spelling was a mistake. If it predicts it is, then it comments, if not it moves on. In either case it sends itself and my account information about the action taken. In this way, I can use this as more training data to improve the model.
+This model is imported into the bot script which signs into reddit and scans several subreddits' new posts. If "tonkatsu" is found, then the model is used to predict if the spelling was a mistake. If it predicts it is, then it comments, if not it moves on. In either case it sends itself, and me, information about the action taken. In this way, I can use this as more training data to improve the model.
 
 As a final consideration, the bot monitors the scores of its previous comments. If they get too many downvotes, the bot deletes the comment. In this way, if the bot mistakenly comments on true *tonkatsu*, the community has a way of easily removing it.
 
