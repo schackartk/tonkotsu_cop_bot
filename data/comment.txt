@@ -2,4 +2,4 @@
 
 Did you happen to mean [tonkotsu](https://en.wikipedia.org/wiki/Tonkotsu_ramen) instead of [tonkatsu](https://en.wikipedia.org/wiki/Tonkatsu)?
 ***
-^(Don't worry, I make mistakes too! If this is indeed *tonkatsu*, please downvote this comment. [Info](https://github.com/schackartk/tonkotsu_cop_bot))
+^(Don't worry, I make mistakes too! If this is indeed *tonkatsu*, please downvote this comment. [Info](https://www.reddit.com/r/ramen/comments/hcbro0/a_smart_tonkatsu_bot/) | [GitHub](https://github.com/schackartk/tonkotsu_cop_bot))
