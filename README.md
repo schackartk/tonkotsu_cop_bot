@@ -68,7 +68,7 @@ Finally, a pickle (`--out`) is produced containing the model, the test data (inc
 
 ![Example of output confusion matrix](data/confusion_matrix.svg)
 
-Unfortunately, since the size of data is small (n=120 and counting), model accuracy upon testing can vary run-to-run (of `bayes.py`, not `bot.py`). Assessed accuracy is on average 88% (95% condifence interval on the average is 78% to 90%).
+Unfortunately, since the size of data is small (n=120 and counting), model accuracy upon testing can vary run-to-run (of `bayes.py`, not `bot.py`). Assessed accuracy is on average 88% (95% confidence interval on the average is 78% to 90%).
 
 ### Expected Behavior
 ```
