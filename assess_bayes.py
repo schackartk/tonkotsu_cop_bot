@@ -10,16 +10,17 @@ import numpy as np
 import os
 import seaborn as sn 
 
+from scipy import stats
 from sklearn.metrics import confusion_matrix
 
 prg = 'python bayes.py'
-n_iter = 50
+n_iter = 100
 
-for i in range(n_iter):
-    out_f = 'data/test/model{}.pkl'.format(i)
-    test_data = 'data/test/test_data{}.txt'.format(i)
+# for i in range(n_iter):
+#     out_f = 'data/test/model{}.pkl'.format(i)
+#     test_data = 'data/test/test_data{}.txt'.format(i)
 
-    os.system('{} -o {} -t {} '.format(prg, out_f, test_data))
+#     os.system('{} -o {} -t {} '.format(prg, out_f, test_data))
 
 actuals = []
 preds = []
@@ -62,3 +63,4 @@ plt.show()
 
 plt.boxplot(accuracies)
 plt.show()
+
