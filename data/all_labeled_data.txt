@@ -118,3 +118,8 @@ label	id	title
 1	hbrzno	'Homemade chashu pork, tonkatsu broth ramen and a perfect egg. (Forgot to cut it open)'
 1	hc3fqa	'Tonkatsu Pork Belly Ramen'
 1	hc8l4m	'Big tonkatsu I had for lunch a while back. Ran out of chashu so I used bacon.'
+0	hci8de	'[Homemade] Pork Tonkatsu'
+1	hcxje6	'[Homemade Tonkatsu: the prequel. Pork shoulder, fresh noodles, egg.'
+0	he11dy	'[Homemade] Tonkatsu!'
+0	hebumw	'[homemade] Tonkatsu, steamed mini French beans and carrots, kimchi and Japanese rice'
+1	hfdyey	'Tonkatsu ramen I made during quarantine, not too bad for my first time : )'
