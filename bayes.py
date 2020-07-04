@@ -13,6 +13,7 @@ import os                       # Working with files
 import pickle                   # Saving model for reuse
 import re                       # Regular expressions
 import seaborn as sn            # Generating heatmap
+import string
 import sys                      # Deal with error messages
 
 from nltk.corpus import stopwords 
@@ -80,10 +81,15 @@ def die(msg='Something bad happened'):
 def clean_title(raw_title):
     """Take title strings and clean them"""
     # Ignore anything that is not in alphabet
-    letters_only = re.sub('[^a-zA-Z]', ' ', raw_title)
+    no_punct = raw_title.translate(str.maketrans('', '', string.punctuation))
+    letters_only = re.sub('[^a-zA-Z]', ' ', no_punct)
     # Ignore case
     words = letters_only.lower().split()
-    # Ignore insignificant words
+    # Get rid of single letter words
+    words = [w for w in words if not len(w) == 1]
+    # Remove last s (for plurals)
+    words = [re.sub('([^s])(s)$', r'\1', w) for w in words]
+    # Ignore stop words
     stop = set(stopwords.words('english'))
     stop.add('tonkatsu')
     meaningful_words = [w for w in words if w not in stop]
