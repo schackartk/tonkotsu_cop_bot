@@ -3,3 +3,4 @@ config.py
 data/model.pkl
 data/test_data.txt
 env/
+.Rproj.user
