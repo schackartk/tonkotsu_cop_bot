@@ -87,8 +87,6 @@ def clean_title(raw_title):
     words = letters_only.lower().split()
     # Get rid of single letter words
     words = [w for w in words if not len(w) == 1]
-    # Remove last s (for plurals)
-    words = [re.sub('([^s])(s)$', r'\1', w) for w in words]
     # Ignore stop words
     stop = set(stopwords.words('english'))
     stop.add('tonkatsu')
