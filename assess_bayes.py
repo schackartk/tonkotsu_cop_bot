@@ -53,7 +53,6 @@ print(acc_std)
 conf = confusion_matrix(actuals,
                         preds,
                         normalize='true')
-
 plt.figure(figsize = (10,7))
 sn.heatmap(conf, annot=True, cmap=plt.cm.Blues)
 plt.xlabel('Predicted Class')
