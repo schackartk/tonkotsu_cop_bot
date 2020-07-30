@@ -68,6 +68,14 @@ def get_args():
         metavar='FILE',
         type=str,
         default='data/id_file.txt')
+    
+    parser.add_argument(
+        '-s',
+        '--subreddits',
+        help='List of subreddits to comment in',
+        metavar='list',
+        type=str,
+        default='ramen,FoodPorn')
 
     return parser.parse_args()
 
@@ -200,7 +208,7 @@ def react_to_summon(r, cmt_file, id_file, mention):
         logging.info('Commented on summoning')
 
 # --------------------------------------------------
-def investigate(r, cmt_file, id_file, model_file):
+def investigate(r, cmt_file, id_file, model_file, subs):
     """Look for tonkotsu misspelling"""
     ct = 0 # Number of instances corrected
     
@@ -230,7 +238,7 @@ def investigate(r, cmt_file, id_file, model_file):
             
             # Use Bayesian model to decide if should comment
             pred = int(predict(post_title, model_file))
-            if pred: # Decided to comment
+            if pred and post.subreddit.display_name in subs: # Decided to comment
                 react_to_post(post, pred, cmt_file, id_file)
                 ct += 1 # Increase count for reporting
                 msg = 'Commented on post'
@@ -254,13 +262,13 @@ def investigate(r, cmt_file, id_file, model_file):
     logging.info('Commented on {} post{}.'.format(ct, '' if ct == 1 else 's'))
     
 # --------------------------------------------------
-def check_summons(r, cmt_file, id_file):
+def check_summons(r, cmt_file, id_file, subs):
     """Check for username mentions / bot summons"""
     
     user_name = config.username
     human_name = config.human_acct
     
-    print('Checking for summons...\n')
+    print('Checking for summons...')
     logging.info('Checking for summons...')
     
     # Get previously commented on posts
@@ -274,6 +282,7 @@ def check_summons(r, cmt_file, id_file):
 
         parent_id = mention.parent_id # Get the id of what was commented on
         post_id = parent_id[3:] # Comments are prefaced with 't3_' or 't1_'
+        sub = mention.subreddit.display_name
         
         # Check if this summon has been acted upon before
         if parent_id not in id_dict.keys():
@@ -283,7 +292,7 @@ def check_summons(r, cmt_file, id_file):
                 if id_dict[post_id] != 0:
                     break
             
-            msg = 'Summon found.'
+            msg = 'Summon found'
             print('{}.'.format(msg))
             logging.info('{}.'.format(msg))
             react_to_summon(r, cmt_file, id_file, mention)
@@ -296,7 +305,7 @@ def check_summons(r, cmt_file, id_file):
             r.redditor(human_name).message('Bot Summoned', full_msg)
             logging.info('Sent messages.')
             
-    print('Done checking for summons.')
+    print('Done checking for summons.\n')
     logging.info('Done checking for summons.')
 
 # --------------------------------------------------
@@ -334,6 +343,7 @@ def main():
     log_file = args.log
     model_file = args.model
     cmt_file = args.comment
+    sub_list = args.subreddits
     
     # Set up logging configurations, debug or just info
     logging.basicConfig(
@@ -341,6 +351,8 @@ def main():
         filemode='a',
         level=logging.DEBUG if args.Debug else logging.INFO
     )
+    
+    subs = sub_list.split(sep=",")
     
     # Check for files
     for f in [id_file, del_file, model_file, cmt_file]:
@@ -350,8 +362,8 @@ def main():
     # Perform the real bot actions
     try:
         r = bot_login() # Create a reddit instance via PRAW
-        investigate(r, cmt_file, id_file, model_file)
-        check_summons(r, cmt_file, id_file)
+        investigate(r, cmt_file, id_file, model_file, subs)
+        check_summons(r, cmt_file, id_file, subs)
         purge(r, del_file)
         logging.info('Logging off.\n')
     except:
