@@ -49,6 +49,14 @@ def get_args():
         default='data/model.pkl')
     
     parser.add_argument(
+        '-s',
+        '--subreddits',
+        help='Which subreddits to train on',
+        metavar='list',
+        type=str,
+        default='ramen,food,FoodPorn')
+    
+    parser.add_argument(
         '-t',
         '--test_out',
         help='Test data output file',
@@ -57,7 +65,7 @@ def get_args():
         default='data/test_data.txt')
     
     parser.add_argument(
-        '-s',
+        '-r',
         '--test_split',
         help='Test data split ratio',
         metavar='FLOAT',
@@ -76,7 +84,13 @@ def die(msg='Something bad happened'):
     """warn() and exit with error"""
     warn(msg)
     sys.exit(1)
-
+    
+# --------------------------------------------------
+def filt_subs(raw_data, subs):
+    """Filter data by subreddit"""
+    filt_data = raw_data[raw_data["sub"].isin(subs)]
+    
+    return(filt_data)
 # --------------------------------------------------
 def clean_title(raw_title):
     """Take title strings and clean them"""
@@ -155,6 +169,7 @@ def main():
     args = get_args()
     data_file = args.data
     pkl_file = args.out
+    sub_list = args.subreddits
     test_out = args.test_out
     split = args.test_split
     
@@ -164,6 +179,15 @@ def main():
     
     # Read in labeled data
     raw_data = pd.read_csv(data_file, delimiter='\t', header=0)
+    
+    # Separate training 
+    subs = sub_list.split(sep=",")
+    
+    filt_data = filt_subs(raw_data, subs)
+    
+    raw_data = filt_data
+    raw_data.reset_index(inplace=True)
+    
     
     # Extract title strings from data
     titles = []
@@ -181,7 +205,6 @@ def main():
     
     print('Training model')
     model = generate_model(x_train, x_test, y_train)
-    
     print('Testing model')
     model_prediction = model.predict(x_test)
     model_accuracy = model.score(x_test, y_test)
