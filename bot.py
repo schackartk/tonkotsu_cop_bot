@@ -170,11 +170,11 @@ def predict(text, model_file):
     return prediction
 
 # --------------------------------------------------
-def react_to_post(post, pred, cmt_file, id_file):
+def react_to_post(post, pred, act, cmt_file, id_file):
     """save post info, comment if predicted mistake"""
     
     str1 = 'Model predicted {}correct spelling.'.format('in' if pred else '')
-    str2 = '{}ommenting.'. format('C' if pred else 'Not c')
+    str2 = '{}ommenting.'. format('C' if act else 'Not c')
     print(str1)
     print('{}..\n'.format(str2))
     logging.info('{} {}'.format(str1, str2))
@@ -185,7 +185,7 @@ def react_to_post(post, pred, cmt_file, id_file):
     save_id(id_file, post.id, pred, sub, title)
     cmt = get_comment(cmt_file)
     
-    if pred:
+    if act:
         post.reply(cmt) # Leave reddit comment
         logging.info('Commented on post.')
 
@@ -244,16 +244,18 @@ def investigate(r, cmt_file, id_file, model_file, subs):
             
             # Use Bayesian model to decide if should comment
             pred = int(predict(post_title, model_file))
+            act = pred
             if pred: # Decided to comment
                 if post_sub in subs:
                     ct += 1 # Increase count for reporting
                     msg = 'Commented on post'
                 else:
+                    act = 0
                     msg = 'Predicted as incorrect, unauthorized sub'
             else: # Decided not to comment
                 msg = 'Post predicted as correct'
                 
-            react_to_post(post, pred, cmt_file, id_file)
+            react_to_post(post, pred, act, cmt_file, id_file)
             
             full_msg = '{}: [{}]({})\n\n"{}"'.format(msg, post.id, post.permalink, post.title)
             
