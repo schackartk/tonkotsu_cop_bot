@@ -95,3 +95,7 @@ t1_fzan1bq	s	food	NA
 fzan1bq	s	food	NA
 
 i0xbdk	1	test	Spicy Tonkatsu from Orenchi Ramen Redwood City, California
+t1_fzr5b15	s	test	NA
+fzr5b15	s	test	NA
+t3_i0zxy2	s	test	NA
+i0zxy2	s	test	NA
