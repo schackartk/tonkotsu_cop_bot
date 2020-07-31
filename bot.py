@@ -100,7 +100,7 @@ def get_history(id_file):
     with open(id_file, 'r') as fh:
         for line in fh.read().splitlines():
             if line:
-                post_id, pred, _, _ = line.split('\t')
+                post_id, pred, _, _, _ = line.split('\t')
                 id_dict[post_id]=pred
         
     return id_dict
@@ -116,14 +116,14 @@ def get_comment(msg_file):
     return cmt
 
 # --------------------------------------------------
-def save_id(id_file, post_id, pred, sub, title):
+def save_id(id_file, post_id, pred, act, sub, title):
     """Save ID of those scanned"""
     
     logging.debug('Saving ID\'s to "{}"'.format(id_file))
     
     # Save id and predicted classification to id_file
     with open(id_file, 'a') as fh:
-        print('{}\t{}\t{}\t{}'.format(post_id, pred, sub, title), file=fh)
+        print('{}\t{}\t{}\t{}\t{}'.format(post_id, pred, act, sub, title), file=fh)
         
     logging.debug('ID\'s saved to "{}"'.format(id_file))
 
@@ -182,7 +182,7 @@ def react_to_post(post, pred, act, cmt_file, id_file):
     sub = post.subreddit.display_name
     title = post.title
     
-    save_id(id_file, post.id, pred, sub, title)
+    save_id(id_file, post.id, pred, act, sub, title)
     cmt = get_comment(cmt_file)
     
     if act:
@@ -201,8 +201,8 @@ def react_to_summon(r, cmt_file, id_file, mention):
     
     print('Responding to summon.\n')
     logging.info('Responding to summon.')
-    save_id(id_file, parent_id, 's', sub, 'NA') # later want to parent text
-    save_id(id_file, post_id, 's', sub, 'NA')   # and summon text
+    save_id(id_file, parent_id, 's', 1, sub, 'NA') # later want to parent text
+    save_id(id_file, post_id, 's', 'NA', sub, 'NA')   # and summon text
 
     if 't3_' in parent_id:
         # respond to original post
@@ -227,7 +227,7 @@ def investigate(r, cmt_file, id_file, model_file, subs):
     logging.info('Scanning posts...')
     
     # Collect newest 25 posts
-    posts = r.subreddit('test+ramen+food+foodporn').new()
+    posts = r.subreddit('test+ramen+food+FoodPorn').new()
     
     # Iterate through posts
     for post in posts:
