@@ -193,16 +193,21 @@ def react_to_post(post, pred, act, cmt_file, id_file):
 def react_to_summon(r, cmt_file, id_file, mention):
     """comment from summons"""
     
-    parent_id = mention.parent_id
-    post_id = parent_id[3:]
     summoner = mention.author
     sub = mention.subreddit.display_name
+    ment_body = mention.body
+    parent_id = mention.parent_id
+    post_id = parent_id[3:]
+    orig_post = r.submission(id=post_id)
+    #orig_text = orig_post.selftext
+    #orig_text = orig_post.title
+    
     cmt = get_comment(cmt_file)
     
     print('Responding to summon.\n')
     logging.info('Responding to summon.')
-    save_id(id_file, parent_id, 's', 1, sub, 'NA') # later want to parent text
-    save_id(id_file, post_id, 's', 'NA', sub, 'NA')   # and summon text
+    save_id(id_file, parent_id, 's', 1, sub, 'NA')
+    save_id(id_file, post_id, 's', 'NA', sub, 'NA')
 
     if 't3_' in parent_id:
         # respond to original post
