@@ -75,7 +75,7 @@ def get_args():
         help='List of subreddits to comment in',
         metavar='list',
         type=str,
-        default='ramen,FoodPorn')
+        default='ramen,FoodPorn,test')
 
     return parser.parse_args()
 
@@ -100,7 +100,7 @@ def get_history(id_file):
     with open(id_file, 'r') as fh:
         for line in fh.read().splitlines():
             if line:
-                post_id, pred = line.split('\t')
+                post_id, pred, _, _ = line.split('\t')
                 id_dict[post_id]=pred
         
     return id_dict
@@ -116,14 +116,14 @@ def get_comment(msg_file):
     return cmt
 
 # --------------------------------------------------
-def save_id(id_file, post_id, pred):
+def save_id(id_file, post_id, pred, sub, title):
     """Save ID of those scanned"""
     
     logging.debug('Saving ID\'s to "{}"'.format(id_file))
     
     # Save id and predicted classification to id_file
     with open(id_file, 'a') as fh:
-        print('{}\t{}'.format(post_id, pred), file=fh)
+        print('{}\t{}\t{}\t{}'.format(post_id, pred, sub, title), file=fh)
         
     logging.debug('ID\'s saved to "{}"'.format(id_file))
 
@@ -178,7 +178,11 @@ def react_to_post(post, pred, cmt_file, id_file):
     print(str1)
     print('{}..\n'.format(str2))
     logging.info('{} {}'.format(str1, str2))
-    save_id(id_file, post.id, pred) # Store post id
+    
+    sub = post.subreddit.display_name
+    title = post.title
+    
+    save_id(id_file, post.id, pred, sub, title)
     cmt = get_comment(cmt_file)
     
     if pred:
@@ -192,12 +196,13 @@ def react_to_summon(r, cmt_file, id_file, mention):
     parent_id = mention.parent_id
     post_id = parent_id[3:]
     summoner = mention.author
+    sub = mention.subreddit.display_name
     cmt = get_comment(cmt_file)
     
     print('Responding to summon.\n')
     logging.info('Responding to summon.')
-    save_id(id_file, parent_id, 's')
-    save_id(id_file, post_id, 's')
+    save_id(id_file, parent_id, 's', sub, 'NA') # later want to parent text
+    save_id(id_file, post_id, 's', sub, 'NA')   # and summon text
 
     if 't3_' in parent_id:
         # respond to original post
@@ -228,6 +233,7 @@ def investigate(r, cmt_file, id_file, model_file, subs):
     for post in posts:
         
         post_title = post.title.lower()
+        post_sub = post.subreddit.display_name
         
         # Check for string, make sure have not commented before
         if 'tonkatsu' in post_title and post.id not in id_dict.keys(): 
@@ -238,13 +244,16 @@ def investigate(r, cmt_file, id_file, model_file, subs):
             
             # Use Bayesian model to decide if should comment
             pred = int(predict(post_title, model_file))
-            if pred and post.subreddit.display_name in subs: # Decided to comment
-                react_to_post(post, pred, cmt_file, id_file)
-                ct += 1 # Increase count for reporting
-                msg = 'Commented on post'
+            if pred: # Decided to comment
+                if post_sub in subs:
+                    ct += 1 # Increase count for reporting
+                    msg = 'Commented on post'
+                else:
+                    msg = 'Predicted as incorrect, unauthorized sub'
             else: # Decided not to comment
-                react_to_post(post, pred, cmt_file, id_file)
                 msg = 'Post predicted as correct'
+                
+            react_to_post(post, pred, cmt_file, id_file)
             
             full_msg = '{}: [{}]({})\n\n"{}"'.format(msg, post.id, post.permalink, post.title)
             
@@ -282,7 +291,6 @@ def check_summons(r, cmt_file, id_file, subs):
 
         parent_id = mention.parent_id # Get the id of what was commented on
         post_id = parent_id[3:] # Comments are prefaced with 't3_' or 't1_'
-        sub = mention.subreddit.display_name
         
         # Check if this summon has been acted upon before
         if parent_id not in id_dict.keys():
