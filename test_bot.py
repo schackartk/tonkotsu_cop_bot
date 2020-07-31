@@ -28,6 +28,7 @@ def random_string():
 # --------------------------------------------------
 def test_usage():
     """usage"""
+    
     rv1, out1 = getstatusoutput('{} -h'.format(prg))
     assert rv1 == 0
     assert re.match("usage", out1, re.IGNORECASE)
@@ -66,7 +67,11 @@ def test_config():
     import config # Login config file
     
     # Attributes assumed to be present in config.py
-    attr_list = ['username', 'password', 'client_id', 'client_secret', 'human_acct']
+    attr_list = ['username',
+                 'password',
+                 'client_id',
+                 'client_secret',
+                 'human_acct']
     
     # Check that imported config.py has those attributes
     for attr in attr_list:
