@@ -86,7 +86,7 @@ def test_post_ret():
     post_type = "<class 'praw.models.listing.generator.ListingGenerator'>"
     
     r = bot.bot_login()
-    posts = r.subreddit('test+ramen+food+foodporn').new()
+    posts = r.subreddit('test').new()
     assert str(type(posts)) == post_type
     
 # --------------------------------------------------
@@ -108,5 +108,5 @@ def test_runs_defaults():
     # This high-level test is useful to me, but is quite fragile.
     # If a required file such as the model is not present, it will fail.
     
-    rv, out = getstatusoutput('{}'.format(prg))
+    rv, out = getstatusoutput('{} -s test'.format(prg))
     assert rv == 0
