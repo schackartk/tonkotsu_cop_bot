@@ -209,7 +209,7 @@ def react_to_summon(r, cmt_file, id_file, mention):
     save_id(id_file, parent_id, 's', 1, sub, 'NA')
     save_id(id_file, post_id, 's', 'NA', sub, 'NA')
 
-    if 't3_' in parent_id:
+    if 't3_' in parent_id and sub != 'food':
         # respond to original post
         post_id = parent_id[3:]
         r.submission(id=post_id).reply(cmt)
