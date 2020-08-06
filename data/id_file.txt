@@ -99,3 +99,7 @@ t1_fzr5b15	s	1	test	NA
 fzr5b15	s	NA	test	NA
 t3_i0zxy2	s	1	test	NA
 i0zxy2	s	NA	test	NA
+i1qe38	1	0	food	[Homemade] Tonkatsu Ramen
+i2whdn	1	1	ramen	Tonkatsu Ramen by a spooky alpine lake in Olympic National Park
+i4hvfk	1	1	ramen	Ramen from the first Ramen shop to open in my hometown. Solid 9/10, delicious tonkatsu ramen. Stacks up well against what I had in little Tokyo a few years ago.
+i4y57u	1	1	ramen	First time trying to make tonkatsu ramen
