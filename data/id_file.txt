@@ -296,3 +296,6 @@ l8rall	1	1	FoodPorn	A massive bowl of homemade ramen I made with a tonkatsu brot
 l9ye1p	1	1	ramen	First time ramen! Shoyu and Tonkatsu broth with marinated eggs, porc belly and scallions
 lazp3l	1	0	food	[Homemade] Pork Tonkatsu Ramen
 lctzg0	0	0	FoodPorn	(I made some) Tonkatsu (Japanese-style fried pork chops)
+leab86	1	1	ramen	Best one yet! Tonkatsu broth with two different tares, chashu, and ajitama.
+lenvrh	0	0	food	[homemade] sweet potato tonkatsu
+leo3lk	0	0	FoodPorn	Made sweet potato tonkatsu this afternoon
