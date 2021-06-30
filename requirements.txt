@@ -14,3 +14,4 @@ pytest-pylint
 scikit-learn
 scipy
 seaborn
+typing
