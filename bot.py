@@ -16,6 +16,17 @@ import re        # Regular expressions for post url
 import sys       # Handle errors
 import time      # Time actions
 
+
+class Args(NamedTuple):
+    """ Command-line arguments"""
+    comment: str
+    debug: bool
+    deleted: str
+    log: str
+    model: str
+    posts: str
+    subs: str
+
 # --------------------------------------------------
 def get_args():
     """Get command-line arguments"""
@@ -77,7 +88,12 @@ def get_args():
         type=str,
         default='ramen,FoodPorn,test')
 
-    return parser.parse_args()
+    args = parser.parse_args
+
+    return Args(comment=args.comment, debug=args.Debug,
+                deleted=args.deleted, log=args.log,
+                model=args.model, posts=args.posts,
+                subs=args.subreddits)
 
 # --------------------------------------------------
 def warn(msg):
