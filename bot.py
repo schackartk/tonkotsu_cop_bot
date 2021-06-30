@@ -16,6 +16,8 @@ import re        # Regular expressions for post url
 import sys       # Handle errors
 import time      # Time actions
 
+from typing import NamedTuple
+
 
 class Args(NamedTuple):
     """ Command-line arguments"""
