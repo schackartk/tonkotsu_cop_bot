@@ -4,7 +4,7 @@ mypy
 nltk
 numpy
 pandas
-pickle5
+pickle-mixin
 praw
 pylint
 pytest
