@@ -1,0 +1,9 @@
+matplotlib
+nltk
+numpy
+pandas
+pickle5
+praw
+scikit-learn
+scipy
+seaborn
