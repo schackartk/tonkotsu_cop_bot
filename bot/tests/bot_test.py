@@ -17,14 +17,14 @@ PRG = "./bot.py"
 
 # --------------------------------------------------
 def test_exists():
-    """ Program exists """
+    """ Program bot.py exists """
 
     assert os.path.isfile(PRG)
 
 
 # --------------------------------------------------
 def test_usage():
-    """ Usage """
+    """ bot.py usage """
 
     for flag in ['-h', '--help']:
         rv, out = getstatusoutput(f'{PRG} {flag}')
