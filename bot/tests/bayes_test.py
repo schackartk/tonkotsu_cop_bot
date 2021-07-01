@@ -16,14 +16,14 @@ PRG = './bayes.py'
 
 # --------------------------------------------------
 def test_exists():
-    """ Program exists """
+    """ bayes.py exists """
 
     assert os.path.isfile(PRG)
 
 
 # --------------------------------------------------
 def test_usage():
-    """ Usage """
+    """ bayes.py usage """
 
     for flag in ['-h', '--help']:
         rv, out = getstatusoutput(f'{PRG} {flag}')
