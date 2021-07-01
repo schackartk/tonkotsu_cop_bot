@@ -6,6 +6,7 @@ Date   : 23 April 2020
 """
 
 import argparse                  # Accept commandline arguments
+import helpers as hp             # Custom made helpers
 import matplotlib.pyplot as plt  # Generating graphical confusion matrix
 import pandas as pd              # Read csv as panda data frame
 import os                        # Working with files
@@ -13,7 +14,6 @@ import pickle                    # Saving model for reuse
 import re                        # Regular expressions
 import seaborn as sn             # Generating heatmap
 import string
-import sys                       # Deal with error messages
 
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
@@ -88,19 +88,6 @@ def get_args():
     return Args(data=args.data, out=args.out,
                 subs=args.subreddits, test=args.test_out,
                 split=args.test_split)
-
-
-# --------------------------------------------------
-def warn(msg):
-    """Print a message to STDERR"""
-    print(msg, file=sys.stderr)
-
-
-# --------------------------------------------------
-def die(msg='Something bad happened'):
-    """warn() and exit with error"""
-    warn(msg)
-    sys.exit(1)
 
 
 # --------------------------------------------------
@@ -182,7 +169,7 @@ def write_test_data(test_out, y_test, model_prediction, raw_data):
         for ind, label in y_test.items():
             pred = model_prediction[i]
             tit = raw_data.title[ind]
-            fh.write('{}\t{}\t{}\n'.format(label, pred, tit))
+            fh.write(f'{label}\t{pred}\t{tit}\n')
             i += 1
 
 
@@ -200,7 +187,7 @@ def main():
 
     # Check for data file
     if not os.path.isfile(data_file):
-        die('Data file "{}" not found.'.format(data_file))
+        hp.die(f'Data file "{data_file}" not found.')
 
     # Read in labeled data
     raw_data = pd.read_csv(data_file, delimiter='\t', header=0)

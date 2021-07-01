@@ -5,16 +5,16 @@ Purpose: A reddit bot for spreading awareness of the misspelling of 'tonkotsu'
 Date   : 22 April 2020
 """
 
-import argparse  # Get command line arguments
-import bayes     # My model file
-import config    # log in information file
-import logging   # Generate log of activity
-import os        # Check for and delete files
-import pickle    # Read pickled model file
-import praw      # Interact with reddit
-import re        # Regular expressions for post url
-import sys       # Handle errors
-import time      # Time actions
+import argparse        # Get command line arguments
+import bayes           # My model file
+import config          # log in information file
+import helpers as hp   # Custom made helpers
+import logging         # Generate log of activity
+import os              # Check for and delete files
+import pickle          # Read pickled model file
+import praw            # Interact with reddit
+import re              # Regular expressions for post url
+import time            # Time actions
 
 from typing import NamedTuple
 
@@ -100,19 +100,6 @@ def get_args():
 
 
 # --------------------------------------------------
-def warn(msg):
-    """Print a message to STDERR"""
-    print(msg, file=sys.stderr)
-
-
-# --------------------------------------------------
-def die(msg='Something bad happened'):
-    """warn() and exit with error"""
-    warn(msg)
-    sys.exit(1)
-
-
-# --------------------------------------------------
 def get_history(id_file):
     """Get information on bot action history from file"""
 
@@ -186,7 +173,7 @@ def predict(text, model_file):
 
     # Check that model is importing okay
     if model_accuracy != model.score(x_test, y_test):
-        warn('Saved and test model accuracy do not match')
+        hp.warn('Saved and test model accuracy do not match')
 
     # Get features from the text using old vectorizer
     text_features, _ = bayes.get_features([text], vec)
@@ -401,7 +388,7 @@ def main():
     # Check for files
     for f in [id_file, del_file, model_file, cmt_file]:
         if not os.path.isfile(f):
-            die(f'File: "{f}" not found')
+            hp.die(f'File: "{f}" not found')
 
     # Perform the real bot actions
     r = bot_login()  # Create a reddit instance via PRAW
