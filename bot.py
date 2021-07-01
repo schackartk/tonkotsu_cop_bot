@@ -397,7 +397,7 @@ def main():
     try:
         r = bot_login() # Create a reddit instance via PRAW
         investigate(r, cmt_file, id_file, model_file, subs)
-        check_summons(r, cmt_file, id_file, subs)
+        check_summons(r, cmt_file, id_file)
         purge(r, del_file)
         logging.info('Logging off.\n')
     except:
