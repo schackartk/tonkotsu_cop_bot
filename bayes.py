@@ -5,25 +5,26 @@ Purpose: A Bayes Model for Tonkatsu occurence classification
 Date   : 23 April 2020
 """
 
-import argparse                 # Accept commandline arguments
-import matplotlib.pyplot as plt # Generating graphical confusion matrix
-import nltk                     # Natural language toolkit - for stopwords
-import pandas as pd             # Read csv as panda data frame
-import os                       # Working with files
-import pickle                   # Saving model for reuse
-import re                       # Regular expressions
-import seaborn as sn            # Generating heatmap
+import argparse                  # Accept commandline arguments
+import matplotlib.pyplot as plt  # Generating graphical confusion matrix
+import pandas as pd              # Read csv as panda data frame
+import os                        # Working with files
+import pickle                    # Saving model for reuse
+import re                        # Regular expressions
+import seaborn as sn             # Generating heatmap
 import string
-import sys                      # Deal with error messages
+import sys                       # Deal with error messages
 
-from nltk.corpus import stopwords 
+from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 
 # Downloading stopwords doesn't need to be run every time
-#nltk.download('stopwords')
+# import nltk
+# nltk.download('stopwords')
+
 
 # --------------------------------------------------
 def get_args():
@@ -39,7 +40,7 @@ def get_args():
         metavar='FILE',
         type=str,
         default='data/all_labeled_data.txt')
-    
+
     parser.add_argument(
         '-o',
         '--out',
@@ -47,7 +48,7 @@ def get_args():
         metavar='FILE',
         type=str,
         default='data/model.pkl')
-    
+
     parser.add_argument(
         '-s',
         '--subreddits',
@@ -55,7 +56,7 @@ def get_args():
         metavar='list',
         type=str,
         default='ramen,food,FoodPorn')
-    
+
     parser.add_argument(
         '-t',
         '--test_out',
@@ -63,7 +64,7 @@ def get_args():
         metavar='FILE',
         type=str,
         default='data/test_data.txt')
-    
+
     parser.add_argument(
         '-r',
         '--test_split',
@@ -71,26 +72,31 @@ def get_args():
         metavar='FLOAT',
         type=float,
         default=0.2)
-    
+
     return parser.parse_args()
+
 
 # --------------------------------------------------
 def warn(msg):
     """Print a message to STDERR"""
     print(msg, file=sys.stderr)
 
+
 # --------------------------------------------------
 def die(msg='Something bad happened'):
     """warn() and exit with error"""
     warn(msg)
     sys.exit(1)
-    
+
+
 # --------------------------------------------------
 def filt_subs(raw_data, subs):
     """Filter data by subreddit"""
     filt_data = raw_data[raw_data["sub"].isin(subs)]
-    
-    return(filt_data)
+
+    return filt_data
+
+
 # --------------------------------------------------
 def clean_title(raw_title):
     """Take title strings and clean them"""
@@ -105,8 +111,9 @@ def clean_title(raw_title):
     stop = set(stopwords.words('english'))
     stop.add('tonkatsu')
     meaningful_words = [w for w in words if w not in stop]
-   
-    return(" ".join(meaningful_words))
+
+    return " ".join(meaningful_words)
+
 
 # --------------------------------------------------
 def get_features(stng, vec_obj):
@@ -122,49 +129,53 @@ def get_features(stng, vec_obj):
         vectorizer = CountVectorizer(analyzer='word',
                                      preprocessor=None,
                                      stop_words='english')
-        
+
         features = vectorizer.fit_transform(stng)
-    
+
     return features, vectorizer
 
+
 # --------------------------------------------------
-def generate_model(X_train, X_test, y_train):
+def generate_model(X_train, y_train):
     """Train Naive Bayes model"""
     # Generate a blank multinomial naive bayes model
     naive_model = MultinomialNB()
-    
+
     # Train the model
     classifier = naive_model.fit(X_train, y_train)
-    
+
     return classifier
+
 
 # --------------------------------------------------
 def make_confusion_matrix(model_prediction, y_test, accuracy_per):
     """Plot confusion matrix"""
     model_confusion = confusion_matrix(y_test, model_prediction)
-    plt.figure(figsize = (10,7))
+    plt.figure(figsize=(10, 7))
     sn.heatmap(model_confusion, annot=True)
     plt.xlabel('Actual Class')
     plt.ylabel('Predicted Class')
-    plt.title('Confusion Matrix \nAccuracy: {}%'.format(accuracy_per), size=14)
+    plt.title(f'Confusion Matrix \nAccuracy: {accuracy_per}%', size=14)
     plt.show()
- 
+
+
 # --------------------------------------------------
 def write_test_data(test_out, y_test, model_prediction, raw_data):
     """Save data used for testing"""
-    with open(test_out,'a') as fh:
-            i = 0
-            fh.write('Actual\tPredicted\tTitle\n')
-            for ind, label in y_test.items():
-                pred = model_prediction[i]
-                tit = raw_data.title[ind]
-                fh.write('{}\t{}\t{}\n'.format(label, pred, tit))
-                i += 1
- 
-# -------------------------------------------------- 
+    with open(test_out, 'a') as fh:
+        i = 0
+        fh.write('Actual\tPredicted\tTitle\n')
+        for ind, label in y_test.items():
+            pred = model_prediction[i]
+            tit = raw_data.title[ind]
+            fh.write('{}\t{}\t{}\n'.format(label, pred, tit))
+            i += 1
+
+
+# --------------------------------------------------
 def main():
     """The good stuff"""
-    
+
     # Retrieve command-line arguments from argparse
     args = get_args()
     data_file = args.data
@@ -172,23 +183,22 @@ def main():
     sub_list = args.subreddits
     test_out = args.test_out
     split = args.test_split
-    
+
     # Check for data file
     if not os.path.isfile(data_file):
         die('Data file "{}" not found.'.format(data_file))
-    
+
     # Read in labeled data
     raw_data = pd.read_csv(data_file, delimiter='\t', header=0)
-    
-    # Separate training 
+
+    # Separate training
     subs = sub_list.split(sep=",")
-    
+
     filt_data = filt_subs(raw_data, subs)
-    
+
     raw_data = filt_data
     raw_data.reset_index(inplace=True)
-    
-    
+
     # Extract title strings from data
     titles = []
     for i in range(raw_data.title.size):
@@ -196,36 +206,38 @@ def main():
 
     # Extract data labels
     y = raw_data.label
-    
+
     # Split data between train and test
-    t_train, t_test, y_train, y_test = train_test_split(titles, y, test_size=split)
+    t_train, t_test, y_train, y_test = train_test_split(titles, y,
+                                                        test_size=split)
     print('Extracting features')
     x_train, vectorizer = get_features(t_train, None)
     x_test, _ = get_features(t_test, vectorizer)
-    
+
     print('Training model')
-    model = generate_model(x_train, x_test, y_train)
+    model = generate_model(x_train, y_train)
     print('Testing model')
     model_prediction = model.predict(x_test)
     model_accuracy = model.score(x_test, y_test)
     accuracy_per = round(model_accuracy*1000)/10
     print('Model accuracy: {}%'.format(accuracy_per))
-    
+
     print('Assessing confusion matrix')
-    make_confusion_matrix(model_prediction, y_test, accuracy_per)    
-    
+    make_confusion_matrix(model_prediction, y_test, accuracy_per)
+
     if os.path.isfile(test_out):
         os.remove(test_out)
         print('Removing previous test data file.')
-    
+
     print('Saving test data.')
     write_test_data(test_out, y_test, model_prediction, raw_data)
-    
+
     print('Saving pickle')
     pickle_tuple = (model, x_test, y_test, model_accuracy, vectorizer)
     with open(pkl_file, 'wb') as file:
         pickle.dump(pickle_tuple, file)
-    
+
+
 # --------------------------------------------------
 if __name__ == '__main__':
     main()
