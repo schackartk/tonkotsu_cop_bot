@@ -43,7 +43,7 @@ def get_args():
         help='Bot comment string file',
         metavar='FILE',
         type=str,
-        default='data/comment.txt')
+        default='../data/comment.txt')
 
     parser.add_argument(
         '-D',
@@ -57,7 +57,7 @@ def get_args():
         help='Deleted comments file',
         metavar='FILE',
         type=str,
-        default='data/deleted.txt')
+        default='../data/deleted.txt')
 
     parser.add_argument(
         '-l',
@@ -65,7 +65,7 @@ def get_args():
         help='Log file',
         metavar='FILE',
         type=str,
-        default='data/.log')
+        default='../data/.log')
 
     parser.add_argument(
         '-m',
@@ -73,7 +73,7 @@ def get_args():
         help='Model for classifying titles',
         metavar='PKL',
         type=str,
-        default='data/model.pkl')
+        default='../data/model.pkl')
 
     parser.add_argument(
         '-p',
@@ -81,7 +81,7 @@ def get_args():
         help='Previously assesssed posts file',
         metavar='FILE',
         type=str,
-        default='data/id_file.txt')
+        default='../data/id_file.txt')
 
     parser.add_argument(
         '-s',

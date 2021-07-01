@@ -52,7 +52,7 @@ def test_bad_input():
 def test_get_history():
     """retrieve previously analyzed post id's"""
 
-    id_file = 'data/id_file.txt'
+    id_file = '../data/id_file.txt'
     id_dict = bot.get_history(id_file)
 
     assert str(type(id_dict)) == "<class 'dict'>"
@@ -100,13 +100,13 @@ def test_post_ret():
 def test_predict():
     """see if prediction model is behaving the same"""
 
-    with open('data/test_data.txt', 'r') as f:
+    with open('../data/test_data.txt', 'r') as f:
         next(f)  # Skip header row
         for line in f:
             fields = line.split('\t')
             old_pred = int(fields[1])
             title = fields[2]
-            new_pred = int(bot.predict(title, 'data/model.pkl'))
+            new_pred = int(bot.predict(title, '../data/model.pkl'))
             assert new_pred == old_pred
 
 

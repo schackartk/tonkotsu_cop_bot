@@ -49,7 +49,7 @@ def get_args():
         help='Labeled data file',
         metavar='FILE',
         type=str,
-        default='data/all_labeled_data.txt')
+        default='../data/all_labeled_data.txt')
 
     parser.add_argument(
         '-o',
@@ -57,7 +57,7 @@ def get_args():
         help='Name of model output (pickle)',
         metavar='FILE',
         type=str,
-        default='data/model.pkl')
+        default='../data/model.pkl')
 
     parser.add_argument(
         '-s',
@@ -73,7 +73,7 @@ def get_args():
         help='Test data output file',
         metavar='FILE',
         type=str,
-        default='data/test_data.txt')
+        default='../data/test_data.txt')
 
     parser.add_argument(
         '-r',
