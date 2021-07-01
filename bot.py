@@ -162,9 +162,9 @@ def bot_login():
                 client_secret = config.client_secret,
                 user_agent = 'Tonkotsu Police v0.1')
     print('log in successful.')
-    print('Logged in as {}.'.format(config.username))
+    print(f'Logged in as {config.username}.')
     logging.debug('log in successful.')
-    logging.debug('Logged in as {}.'.format(config.username))
+    logging.debug(f'Logged in as {config.username}.')
 
     return r
 
@@ -192,11 +192,11 @@ def predict(text, model_file):
 def react_to_post(post, pred, act, cmt_file, id_file):
     """save post info, comment if predicted mistake"""
 
-    str1 = 'Model predicted {}correct spelling.'.format('in' if pred else '')
-    str2 = '{}ommenting.'. format('C' if act else 'Not c')
+    str1 = f'Model predicted {"in" if pred else ""}correct spelling.'
+    str2 = f'{"C" if act else "Not c"}ommenting.'
     print(str1)
-    print('{}..\n'.format(str2))
-    logging.info('{} {}'.format(str1, str2))
+    print(f'{str2}..\n')
+    logging.info(f'{str1} {str2}')
 
     sub = post.subreddit.display_name
     title = post.title
@@ -231,7 +231,7 @@ def react_to_summon(r, cmt_file, id_file, mention):
         post_id = parent_id[3:]
         r.submission(id=post_id).reply(cmt)
         logging.info('Commented on post.')
-        mention.reply('Thank you /u/{} for the tip!'.format(summoner))
+        mention.reply(f'Thank you /u/{summoner} for the tip!')
         logging.info('Commented on summoning')
 
 # --------------------------------------------------
@@ -259,10 +259,10 @@ def investigate(r, cmt_file, id_file, model_file, subs):
 
         # Check for string, make sure have not commented before
         if 'tonkatsu' in post_title and post.id not in id_dict.keys():
-            print('Tonkatsu found in post: {}.'.format(post.id))
-            print('Post title: "{}".'.format(post.title))
-            logging.info('Tonktasu found in post: {}.'.format(post.id))
-            logging.info('Post title: {}'.format(post.title))
+            print(f'Tonkatsu found in post: {post.id}.')
+            print(f'Post title: "{post.title}".')
+            logging.info(f'Tonktasu found in post: {post.id}.')
+            logging.info(f'Post title: {post.title}')
 
             # Use Bayesian model to decide if should comment
             pred = int(predict(post_title, model_file))
@@ -279,8 +279,7 @@ def investigate(r, cmt_file, id_file, model_file, subs):
 
             react_to_post(post, pred, act, cmt_file, id_file)
 
-            full_msg = '{}: [{}]({})\n\n"{}"'.format(msg, post.id,
-                                                     post.permalink, post.title)
+            full_msg = '{msg}: [{post.id}]({post.permalink})\n\n"{post.title}"'                                                   post.permalink, post.title)
 
             # Send messages notifying decision
             r.redditor(user_name).message('Tonkatsu Found', full_msg)
@@ -290,9 +289,9 @@ def investigate(r, cmt_file, id_file, model_file, subs):
             break # Don't need to hit twice if "tonkatsu" is repeated
 
     print('Done scanning.')
-    print('Commented on {} post{}.\n'.format(ct, '' if ct == 1 else 's'))
+    print(f'Commented on {ct} post{"" if ct == 1 else "s"}.\n')
     logging.info('Done scanning.')
-    logging.info('Commented on {} post{}.'.format(ct, '' if ct == 1 else 's'))
+    logging.info(f'Commented on {ct} post{"" if ct == 1 else "s"}.')
 
 # --------------------------------------------------
 def check_summons(r, cmt_file, id_file):
@@ -325,14 +324,13 @@ def check_summons(r, cmt_file, id_file):
                     break
 
             msg = 'Summon found'
-            print('{}.'.format(msg))
-            logging.info('{}.'.format(msg))
+            print(f'{msg}.')
+            logging.info(f'{msg}.')
             react_to_summon(r, cmt_file, id_file, mention)
 
             # Post address, no comment info
             post_add = re.sub('[?]context=\d+','', mention.context)
-            full_msg = '{}: [{}]({})\n\n"{}"'.format(msg, mention.id,
-                                                     post_add, mention.body)
+            full_msg = f'{msg}: [{mention.id}]({post_add})\n\n"{mention.body}"'                                                     post_add, mention.body)
 
             # Send messages notifying decision
             r.redditor(user_name).message('Bot Summoned', full_msg)
@@ -356,7 +354,7 @@ def purge(r, del_file):
     for comment in user.comments.new(limit=None):
         if comment.score < -1:
             comment.delete()
-            msg = 'Comment removed due to downvotes: {}.'.format(comment.id)
+            msg = f'Comment removed due to downvotes: {comment.id}.'
             r.redditor(user_name).message('Comment Removed', msg)
             print(msg)
             logging.info(msg)
@@ -391,7 +389,7 @@ def main():
     # Check for files
     for f in [id_file, del_file, model_file, cmt_file]:
         if not os.path.isfile(f):
-            die('File: "{}" not found'.format(f))
+            die(f'File: "{f}" not found')
 
     # Perform the real bot actions
     try:
