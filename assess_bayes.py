@@ -7,10 +7,8 @@ Date   : 6 June 2020
 
 import matplotlib.pyplot as plt
 import numpy as np
-import os
-import seaborn as sn 
+import seaborn as sn
 
-from scipy import stats
 from sklearn.metrics import confusion_matrix
 
 prg = 'python bayes.py'
@@ -29,18 +27,18 @@ accuracies = []
 for i in range(n_iter):
     with open('data/test/test_data{}.txt'.format(i)) as fh:
         next(fh)
-        
+
         act_vect = []
         pred_vect = []
-        
+
         for line in fh.read().splitlines():
             act, pred, _ = line.split('\t')
             act_vect.append(act)
             pred_vect.append(pred)
-          
+
         conf = confusion_matrix(act_vect, pred_vect, normalize='true')
         acc = (conf[0][0] + conf[1][1]) / 2
-        
+
         preds = preds + pred_vect
         actuals = actuals + act_vect
         accuracies.append(acc)
@@ -62,4 +60,3 @@ plt.show()
 
 plt.boxplot(accuracies)
 plt.show()
-
