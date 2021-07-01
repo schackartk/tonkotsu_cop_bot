@@ -29,6 +29,7 @@ class Args(NamedTuple):
     posts: str
     subs: str
 
+
 # --------------------------------------------------
 def get_args():
     """Get command-line arguments"""
@@ -97,16 +98,19 @@ def get_args():
                 model=args.model, posts=args.posts,
                 subs=args.subreddits)
 
+
 # --------------------------------------------------
 def warn(msg):
     """Print a message to STDERR"""
     print(msg, file=sys.stderr)
+
 
 # --------------------------------------------------
 def die(msg='Something bad happened'):
     """warn() and exit with error"""
     warn(msg)
     sys.exit(1)
+
 
 # --------------------------------------------------
 def get_history(id_file):
@@ -119,9 +123,10 @@ def get_history(id_file):
         for line in fh.read().splitlines():
             if line:
                 post_id, pred, _, _, _ = line.split('\t')
-                id_dict[post_id]=pred
+                id_dict[post_id] = pred
 
     return id_dict
+
 
 # --------------------------------------------------
 def get_comment(msg_file):
@@ -132,6 +137,7 @@ def get_comment(msg_file):
         cmt = fh.read()
 
     return cmt
+
 
 # --------------------------------------------------
 def save_id(id_file, post_id, pred, act, sub, title):
@@ -146,6 +152,7 @@ def save_id(id_file, post_id, pred, act, sub, title):
 
     logging.debug(f'ID\'s saved to "{id_file}"')
 
+
 # --------------------------------------------------
 def bot_login():
     """Sign bot into reddit"""
@@ -156,17 +163,18 @@ def bot_login():
     logging.info(f'{login_time}: Logging in.')
 
     # Sign into reddit with praw using config.py info
-    r = praw.Reddit(username = config.username,
-                password = config.password,
-                client_id = config.client_id,
-                client_secret = config.client_secret,
-                user_agent = 'Tonkotsu Police v0.1')
+    r = praw.Reddit(username=config.username,
+                    password=config.password,
+                    client_id=config.client_id,
+                    client_secret=config.client_secret,
+                    user_agent='Tonkotsu Police v0.1')
     print('log in successful.')
     print(f'Logged in as {config.username}.')
     logging.debug('log in successful.')
     logging.debug(f'Logged in as {config.username}.')
 
     return r
+
 
 # --------------------------------------------------
 def predict(text, model_file):
@@ -188,6 +196,7 @@ def predict(text, model_file):
 
     return prediction
 
+
 # --------------------------------------------------
 def react_to_post(post, pred, act, cmt_file, id_file):
     """save post info, comment if predicted mistake"""
@@ -205,8 +214,9 @@ def react_to_post(post, pred, act, cmt_file, id_file):
     cmt = get_comment(cmt_file)
 
     if act:
-        post.reply(cmt) # Leave reddit comment
+        post.reply(cmt)  # Leave reddit comment
         logging.info('Commented on post.')
+
 
 # --------------------------------------------------
 def react_to_summon(r, cmt_file, id_file, mention):
@@ -216,8 +226,6 @@ def react_to_summon(r, cmt_file, id_file, mention):
     sub = mention.subreddit.display_name
     parent_id = mention.parent_id
     post_id = parent_id[3:]
-    #orig_text = orig_post.selftext
-    #orig_text = orig_post.title
 
     cmt = get_comment(cmt_file)
 
@@ -234,10 +242,11 @@ def react_to_summon(r, cmt_file, id_file, mention):
         mention.reply(f'Thank you /u/{summoner} for the tip!')
         logging.info('Commented on summoning')
 
+
 # --------------------------------------------------
 def investigate(r, cmt_file, id_file, model_file, subs):
     """Look for tonkotsu misspelling"""
-    ct = 0 # Number of instances corrected
+    ct = 0  # Number of instances corrected
 
     user_name = config.username
     human_name = config.human_acct
@@ -267,31 +276,32 @@ def investigate(r, cmt_file, id_file, model_file, subs):
             # Use Bayesian model to decide if should comment
             pred = int(predict(post_title, model_file))
             act = pred
-            if pred: # Decided to comment
+            if pred:  # Decided to comment
                 if post_sub in subs:
-                    ct += 1 # Increase count for reporting
+                    ct += 1  # Increase count for reporting
                     msg = 'Commented on post'
                 else:
                     act = 0
                     msg = 'Predicted as incorrect, unauthorized sub'
-            else: # Decided not to comment
+            else:  # Decided not to comment
                 msg = 'Post predicted as correct'
 
             react_to_post(post, pred, act, cmt_file, id_file)
 
-            full_msg = '{msg}: [{post.id}]({post.permalink})\n\n"{post.title}"'                                                   post.permalink, post.title)
+            full_msg = f'{msg}: [{post.id}]({post.permalink})\n"{post.title}"'
 
             # Send messages notifying decision
             r.redditor(user_name).message('Tonkatsu Found', full_msg)
             r.redditor(human_name).message('Tonkatsu Found', full_msg)
             logging.info('Sent messages.')
 
-            break # Don't need to hit twice if "tonkatsu" is repeated
+            break  # Don't need to hit twice if "tonkatsu" is repeated
 
     print('Done scanning.')
     print(f'Commented on {ct} post{"" if ct == 1 else "s"}.\n')
     logging.info('Done scanning.')
     logging.info(f'Commented on {ct} post{"" if ct == 1 else "s"}.')
+
 
 # --------------------------------------------------
 def check_summons(r, cmt_file, id_file):
@@ -312,8 +322,8 @@ def check_summons(r, cmt_file, id_file):
     # Deal with username mentions
     for mention in mentions:
 
-        parent_id = mention.parent_id # Get the id of what was commented on
-        post_id = parent_id[3:] # Comments are prefaced with 't3_' or 't1_'
+        parent_id = mention.parent_id  # Get the id of what was commented on
+        post_id = parent_id[3:]  # Comments are prefaced with 't3_' or 't1_'
 
         # Check if this summon has been acted upon before
         if parent_id not in id_dict.keys():
@@ -329,8 +339,8 @@ def check_summons(r, cmt_file, id_file):
             react_to_summon(r, cmt_file, id_file, mention)
 
             # Post address, no comment info
-            post_add = re.sub('[?]context=\d+','', mention.context)
-            full_msg = f'{msg}: [{mention.id}]({post_add})\n\n"{mention.body}"'                                                     post_add, mention.body)
+            post_add = re.sub(r'[?]context=\d+', '', mention.context)
+            full_msg = f'{msg}: [{mention.id}]({post_add})\n\n"{mention.body}"'
 
             # Send messages notifying decision
             r.redditor(user_name).message('Bot Summoned', full_msg)
@@ -339,6 +349,7 @@ def check_summons(r, cmt_file, id_file):
 
     print('Done checking for summons.\n')
     logging.info('Done checking for summons.')
+
 
 # --------------------------------------------------
 def purge(r, del_file):
@@ -358,11 +369,12 @@ def purge(r, del_file):
             r.redditor(user_name).message('Comment Removed', msg)
             print(msg)
             logging.info(msg)
-            with open(del_file, 'a') as fh: # Record deleted commented id
+            with open(del_file, 'a') as fh:  # Record deleted commented id
                 print(comment.id, file=fh)
 
     print('Done purging.')
     logging.info('Done scanning comments.')
+
 
 # --------------------------------------------------
 def main():
@@ -392,14 +404,12 @@ def main():
             die(f'File: "{f}" not found')
 
     # Perform the real bot actions
-    try:
-        r = bot_login() # Create a reddit instance via PRAW
-        investigate(r, cmt_file, id_file, model_file, subs)
-        check_summons(r, cmt_file, id_file)
-        purge(r, del_file)
-        logging.info('Logging off.\n')
-    except:
-        die('Failed to perform bot actions.')
+    r = bot_login()  # Create a reddit instance via PRAW
+    investigate(r, cmt_file, id_file, model_file, subs)
+    check_summons(r, cmt_file, id_file)
+    purge(r, del_file)
+    logging.info('Logging off.\n')
+
 
 # --------------------------------------------------
 if __name__ == '__main__':
