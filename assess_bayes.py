@@ -25,7 +25,7 @@ preds = []
 accuracies = []
 
 for i in range(n_iter):
-    with open('data/test/test_data{}.txt'.format(i)) as fh:
+    with open('../data/test/test_data{}.txt'.format(i)) as fh:
         next(fh)
 
         act_vect = []

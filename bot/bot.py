@@ -5,16 +5,16 @@ Purpose: A reddit bot for spreading awareness of the misspelling of 'tonkotsu'
 Date   : 22 April 2020
 """
 
-import argparse  # Get command line arguments
-import bayes     # My model file
-import config    # log in information file
-import logging   # Generate log of activity
-import os        # Check for and delete files
-import pickle    # Read pickled model file
-import praw      # Interact with reddit
-import re        # Regular expressions for post url
-import sys       # Handle errors
-import time      # Time actions
+import argparse        # Get command line arguments
+import bayes           # My model file
+import config          # log in information file
+import helpers as hp   # Custom made helpers
+import logging         # Generate log of activity
+import os              # Check for and delete files
+import pickle          # Read pickled model file
+import praw            # Interact with reddit
+import re              # Regular expressions for post url
+import time            # Time actions
 
 from typing import NamedTuple
 
@@ -43,7 +43,7 @@ def get_args():
         help='Bot comment string file',
         metavar='FILE',
         type=str,
-        default='data/comment.txt')
+        default='../data/comment.txt')
 
     parser.add_argument(
         '-D',
@@ -57,7 +57,7 @@ def get_args():
         help='Deleted comments file',
         metavar='FILE',
         type=str,
-        default='data/deleted.txt')
+        default='../data/deleted.txt')
 
     parser.add_argument(
         '-l',
@@ -65,7 +65,7 @@ def get_args():
         help='Log file',
         metavar='FILE',
         type=str,
-        default='data/.log')
+        default='../data/.log')
 
     parser.add_argument(
         '-m',
@@ -73,7 +73,7 @@ def get_args():
         help='Model for classifying titles',
         metavar='PKL',
         type=str,
-        default='data/model.pkl')
+        default='../data/model.pkl')
 
     parser.add_argument(
         '-p',
@@ -81,7 +81,7 @@ def get_args():
         help='Previously assesssed posts file',
         metavar='FILE',
         type=str,
-        default='data/id_file.txt')
+        default='../data/id_file.txt')
 
     parser.add_argument(
         '-s',
@@ -97,19 +97,6 @@ def get_args():
                 deleted=args.deleted, log=args.log,
                 model=args.model, posts=args.posts,
                 subs=args.subreddits)
-
-
-# --------------------------------------------------
-def warn(msg):
-    """Print a message to STDERR"""
-    print(msg, file=sys.stderr)
-
-
-# --------------------------------------------------
-def die(msg='Something bad happened'):
-    """warn() and exit with error"""
-    warn(msg)
-    sys.exit(1)
 
 
 # --------------------------------------------------
@@ -186,7 +173,7 @@ def predict(text, model_file):
 
     # Check that model is importing okay
     if model_accuracy != model.score(x_test, y_test):
-        warn('Saved and test model accuracy do not match')
+        hp.warn('Saved and test model accuracy do not match')
 
     # Get features from the text using old vectorizer
     text_features, _ = bayes.get_features([text], vec)
@@ -401,7 +388,7 @@ def main():
     # Check for files
     for f in [id_file, del_file, model_file, cmt_file]:
         if not os.path.isfile(f):
-            die(f'File: "{f}" not found')
+            hp.die(f'File: "{f}" not found')
 
     # Perform the real bot actions
     r = bot_login()  # Create a reddit instance via PRAW
