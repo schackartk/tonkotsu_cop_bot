@@ -20,10 +20,20 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
+from typing import NamedTuple
 
 # Downloading stopwords doesn't need to be run every time
 # import nltk
 # nltk.download('stopwords')
+
+
+class Args(NamedTuple):
+    """Command-line arguments"""
+    data: str
+    out: str
+    subs: str
+    test: str
+    split: float
 
 
 # --------------------------------------------------
@@ -73,7 +83,11 @@ def get_args():
         type=float,
         default=0.2)
 
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    return Args(data=args.data, out=args.out,
+                subs=args.subreddits, test=args.test_out,
+                split=args.test_split)
 
 
 # --------------------------------------------------
@@ -180,9 +194,9 @@ def main():
     args = get_args()
     data_file = args.data
     pkl_file = args.out
-    sub_list = args.subreddits
-    test_out = args.test_out
-    split = args.test_split
+    sub_list = args.subs
+    test_out = args.test
+    split = args.split
 
     # Check for data file
     if not os.path.isfile(data_file):
