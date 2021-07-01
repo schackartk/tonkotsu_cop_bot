@@ -428,3 +428,5 @@ oad0ye	1	1	ramen	I made a Tonkatsu Ramen for the first time!
 oalknf	1	1	ramen	Tonkatsu from gu ramen Laguna beach
 oalxhi	1	1	ramen	I made Temkatsu (Tempura + Tonkatsu) Ramen for my dad
 oam13m	1	1	FoodPorn	[Homemade] Temkatsu (Tempura and tonkatsu combo) Ramen (ft homegrown spring onions)
+objxuc	1	0	food	[Homemade] Tonkatsu Ramen
+obr6kj	1	1	ramen	I made half homemade Tonkatsu ramen with fresh frozen noodles and broth, pork belly, bamboo shoot, Ajitsuke eggs, edamame, bean sprout, shiitake mushrooms, green onion, and seaweed. My first time ever making ramen!
