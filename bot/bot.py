@@ -208,7 +208,7 @@ def delete_comment(r, comment, del_file):
         r.redditor(user_name).message('Comment Removed', msg)
     else:
         msg = f'Comment by {comment.author}'
-    
+
     print(msg)
     logging.info(msg)
     with open(del_file, 'a') as fh:  # Record deleted commented id
@@ -389,10 +389,10 @@ def purge(r, del_file):
 
     # Check PMs for requests to delete
     for message in r.inbox.messages():
-        
+
         if message.subject != 'deletion':
             continue
-        
+
         bad_cmt = r.comment(id=message.body)
 
         parent = bad_cmt.submission
