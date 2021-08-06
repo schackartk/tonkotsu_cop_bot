@@ -185,6 +185,37 @@ def predict(text, model_file):
 
 
 # --------------------------------------------------
+def leave_comment(post, cmt_file):
+    """leave bot comment"""
+
+    cmt = get_comment(cmt_file)
+
+    cmt_obj = post.reply(cmt)
+
+    cmt = cmt.format(id=cmt_obj.fullname)
+    cmt_obj.edit(cmt)
+
+
+# --------------------------------------------------
+def delete_comment(r, comment, del_file):
+    """delete comment"""
+
+    user_name = config.username
+
+    if comment.author.name == user_name:
+        comment.delete()
+        msg = f'Comment removed: {comment.id}.'
+        r.redditor(user_name).message('Comment Removed', msg)
+    else:
+        msg = f'Comment by {comment.author}'
+    
+    print(msg)
+    logging.info(msg)
+    with open(del_file, 'a') as fh:  # Record deleted commented id
+        print(comment.id, file=fh)
+
+
+# --------------------------------------------------
 def react_to_post(post, pred, act, cmt_file, id_file):
     """save post info, comment if predicted mistake"""
 
@@ -198,10 +229,9 @@ def react_to_post(post, pred, act, cmt_file, id_file):
     title = post.title
 
     save_id(id_file, post.id, pred, act, sub, title)
-    cmt = get_comment(cmt_file)
 
     if act:
-        post.reply(cmt)  # Leave reddit comment
+        leave_comment(post, cmt_file)
         logging.info('Commented on post.')
 
 
@@ -214,8 +244,6 @@ def react_to_summon(r, cmt_file, id_file, mention):
     parent_id = mention.parent_id
     post_id = parent_id[3:]
 
-    cmt = get_comment(cmt_file)
-
     print('Responding to summon.\n')
     logging.info('Responding to summon.')
     save_id(id_file, parent_id, 's', 1, sub, 'NA')
@@ -224,7 +252,8 @@ def react_to_summon(r, cmt_file, id_file, mention):
     if 't3_' in parent_id and sub != 'food':
         # respond to original post
         post_id = parent_id[3:]
-        r.submission(id=post_id).reply(cmt)
+        post = r.submission(id=post_id)
+        leave_comment(post, cmt_file)
         logging.info('Commented on post.')
         mention.reply(f'Thank you /u/{summoner} for the tip!')
         logging.info('Commented on summoning')
@@ -345,19 +374,34 @@ def purge(r, del_file):
     user_name = config.username
     user = r.redditor(user_name)
 
+    with open(del_file, 'r') as fh:
+        deleted = fh.read().splitlines()
+
     print('Checking to purge comments... ')
     logging.info('Scanning bot comments...')
 
     # Go through bot's comments
     for comment in user.comments.new(limit=None):
         if comment.score < -1:
-            comment.delete()
-            msg = f'Comment removed due to downvotes: {comment.id}.'
-            r.redditor(user_name).message('Comment Removed', msg)
-            print(msg)
-            logging.info(msg)
-            with open(del_file, 'a') as fh:  # Record deleted commented id
-                print(comment.id, file=fh)
+            delete_comment(r, comment, del_file)
+
+    logging.info('Scanning PMs...')
+
+    # Check PMs for requests to delete
+    for message in r.inbox.messages():
+        
+        if message.subject != 'deletion':
+            continue
+        
+        bad_cmt = r.comment(id=message.body)
+
+        parent = bad_cmt.submission
+
+        if bad_cmt.id in deleted:
+            continue
+
+        if parent.author == message.author:
+            delete_comment(r, bad_cmt, del_file)
 
     print('Done purging.')
     logging.info('Done scanning comments.')
